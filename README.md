@@ -31,5 +31,7 @@ Run the following command in the `$HOME/Downloads` folder
 >`sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"`
 
 ## tmux
+install tpm (tmux package manager)
+> `git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
 in tmux run `<prefix> I`to install all the packages
 
