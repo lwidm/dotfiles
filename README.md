@@ -33,5 +33,6 @@ Run the following command in the `$HOME/Downloads` folder
 ## tmux
 install tpm (tmux package manager)
 > `git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
+
 in tmux run `<prefix> I`to install all the packages
 

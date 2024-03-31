@@ -223,13 +223,17 @@ default_border pixel 2
 #
 # Screens
 #
-output Virtual-1 {
-    mode 2560x1440
-    #primary
+output DP-3 {
+    mode 2560x1440@143.912Hz
+    position 0 0
 }
-output Virtual-2 {
-    mode 1920x1080
-    #position left_of Virtual-1
+output HDMI-A-1 {
+    mode 1920x1080@60.000Hz
+    position 2560 0 
+}
+output DP-4 {
+    mode 1920x1080@60.000Hz
+    position -1920 0
 }
 
 #
