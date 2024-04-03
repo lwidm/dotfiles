@@ -105,7 +105,7 @@ source $ZSH/oh-my-zsh.sh
 
 # Autostart sway on login
 if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
-    exec sway
+    exec startx
 fi
 
 
