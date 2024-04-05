@@ -1,0 +1,54 @@
+! Fonts
+*font:			xft:Hack-Regular:size=12,xft:JetBrainsMono Nerd Font:size=12
+*boldFont:		xft:Hack-Bold:size=12
+*italicFont:		xft:Hack-Italic:size=12
+*bolditalicFont:	xft:Hack-BoldItalic:size=12
+
+!! Colorscheme
+*background: #1D1F21
+*foreground: #C5C8C6
+
+! Black
+*color0:	#282A2E
+*color8:	#373B41
+
+! Red
+*color1:	#A54242
+*color9:	#CC6666
+
+! Green:
+*color2:	#8C9440
+*color10:	#B5BD68
+
+! Yellow
+*color3:	#DE925F
+*color11:	#F0C674
+
+! Blue
+*color4:	#5F819D
+*color12:	#81A2BE
+
+! Magenta
+*color5:	#85678F
+*color13:	#B294BB
+
+! Cyan
+*color6:	#5E8D87
+*color14:	#8ABEB7
+
+! White
+*color7:	#707880
+*color15:	#C5C8C6
+
+
+!! URxvt Appearance
+URxvt.letterSpace:		0
+URxvt.lineSpace:		0
+URxvt.geometry:		92x70
+URxvt.internalBorder:	32
+URxvt.cursorBlink:		true
+URxvt.saveline:		2048
+URxvt.scrollBar:		false
+URxvt.scrollBar_right:	false
+URxvt.depth:			true
+URxvt.iso14755:		true
