@@ -1,0 +1,127 @@
+# i3blocks config file
+# for documentation of coppied modules see: https://github.com/vivien/i3blocks-contrib
+
+# List of valid properties
+# color
+# command
+# full_text
+# instance
+# interval
+# label
+# min_width
+# name
+# separator
+# separator_block_width
+# short_text
+# signal
+# urgent
+
+# Global properties
+#
+# THe top properties below are applied to every block, but can be overridden
+command=$SCRIPT_DIR/$BLOCK_NAME
+separator_block_width=15
+markup=pango
+
+[volume-pulseaudio]
+command=$SCRIPT_DIR/volume-pulseaudio
+interval=once
+signal=1
+#MIXER=[determined automatically]
+#SCONTROL=[determined automatically]
+##exposed format variables: ${SYMB}, ${VOL}, ${INDEX}, ${NAME}
+#LONG_FORMAT="${SYMB} ${VOL}% [${INDEX}:${NAME}]"
+#SHORT_FORMAT="${SYMB} ${VOL}% [${INDEX}]"
+#AUDIO_HIGH_SYMBOL='  '
+#AUDIO_MED_THRESH=50
+#AUDIO_MED_SYMBOL='  '
+#AUDIO_LOW_THRESH=0
+#AUDIO_LOW_SYMBOL='  '
+#AUDIO_DELTA=5
+#DEFAULT_COLOR="#ffffff"
+#MUTED_COLOR="#a0a0a0"
+#USE_ALSA_NAME=0
+#USE_DESCRIPTION=0
+## SUBSCRIBE=1 requires interval=persist and always uses LONG_FORMAT
+#SUBSCRIBE=0
+
+
+# [memory2]
+[memory]
+label= 
+interval=persist
+markup=pango
+bar_chars=_▏▎▍▌▋▊▉██
+bar_size=20
+critical=50
+warning=20
+color_critical=#d9534f
+
+[disk]
+label= :
+#DIR=$HOME
+#ALERT_LOW=10
+interval=30
+
+[iface]
+#IFACE=wlan0
+color=#00FF00
+interval=10
+separator=false
+
+[wifi]
+#INTERFACE=wlp30
+label=wifi:
+interval=10
+separator=false
+
+[bandwidth2]
+interval=persist
+LABEL=
+WARN_RX=307200
+WARN_TX=30720
+CRIT_RX=512000
+CRIT_TX=51200
+
+[cpu_usage2]
+interval=persist
+#min_width=CPU 100.00%
+#REFRESH_TIME=1
+#LABEL=CPU 
+#WARN_PERCENT=50
+#CRIT_PERCENT=80
+#DECIMALS=2
+
+[load_average]
+interval=10
+
+[battery2]
+interval=30
+
+[time]
+interval=1
+STRFTIME_FORMAT=%Y-%m-%d %H:%M:%S
+TZONE=$DEFAULT_TZ
+TZ_LABELS=CH
+
+[mediaplayer]
+instance=spotify,%any,vlc
+interval=5
+signal=10
+
+# Key Indicators
+#
+# Add the following bindings to i3 config file
+#
+# bindsym --release Caps_Lock exec pkill -SIGRTMIN+11 i3blocks
+# bindsym --release Num_Lock pkill -SIGRTMIN+11 i3blocks
+[keyindicator]
+KEY=CAPS
+interval=once
+signal=11
+
+
+[keyindicator]
+KEY=NUM
+interval=once
+signal=11
