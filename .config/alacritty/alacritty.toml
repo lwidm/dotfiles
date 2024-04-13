@@ -1,0 +1,12 @@
+import = [
+	"~/.config/alacritty/catppuccin-mocha.toml",
+]
+
+[window]
+opacity = 0.5
+
+[font]
+normal = {family = "Hack", style ="Regular" }
+bold = {family = "Hack", style ="Bold" }
+italic = {family = "Hack", style ="Italic" }
+bold_italic = {family = "Hack", style ="Bold Italic"}
