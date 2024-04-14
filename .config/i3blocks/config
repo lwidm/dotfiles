@@ -23,8 +23,9 @@ command=$SCRIPT_DIR/$BLOCK_NAME
 separator_block_width=15
 markup=pango
 
-[volume-pulseaudio]
-command=$SCRIPT_DIR/volume-pulseaudio
+# [volume-pulseaudio]
+# command=$SCRIPT_DIR/volume-pulseaudio
+[volue-pipewire]
 interval=once
 signal=1
 #MIXER=[determined automatically]
