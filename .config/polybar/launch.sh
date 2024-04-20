@@ -6,7 +6,7 @@ polybar-msg cmd quit
 # killall -q polybar
 
 # Luanch bar1 and bar2
-echo "---" | tee /tmp/polybarExample.log 
-polybar example 2>&1 | tee -a /tmp/polybarExample.log & disown
+echo "---" | tee /tmp/polybarCustom.log 
+polybar custom 2>&1 | tee -a /tmp/polybarCustom.log & disown
 
 echo "Bars launched..."
