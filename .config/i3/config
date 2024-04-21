@@ -233,7 +233,7 @@ exec_always xrandr --output Virtual-1 --mode 2560x1440
 exec_always xrandr --output Virtual-2 --mode 1920x1080
 exec_always xrandr --output Virtual-3 --mode 1920x1080
 exec_always xrandr --output Virtual-1 --primary
-exec --no-startup-id feh --no-fehbg --bg-fill /usr/share/backgrounds/nixos-wallpaper-catppuccin-latte.svg
+exec --no-startup-id feh --no-fehbg --bg-fill $HOME/.bg/nixos-wallpaper-catppuccin-latte.svg
 
 # i3blocks settings
 bindsym --release Caps_Lock exec pkill -SIGRTMIN+11 i3blocks
