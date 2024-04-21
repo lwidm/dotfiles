@@ -103,7 +103,7 @@ source $ZSH/oh-my-zsh.sh
 # Conda
 
 
-# Autostart sway on login
+# Autostart X11 on login
 if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
     exec startx
 fi
