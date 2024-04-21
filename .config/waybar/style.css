@@ -99,6 +99,7 @@ button:hover {
 #mode,
 #idle_inhibitor,
 #scratchpad,
+#keyboard-state,
 #mpd {
     padding: 0 10px;
     margin: 6px 3px;
@@ -257,8 +258,6 @@ label:focus {
 }
 
 #keyboard-state {
-    background: @base;
-    color: @text;
     padding: 0 0px;
     margin: 0px 5px;
     min-width: 16px;

@@ -155,11 +155,6 @@
         "spacing": 10
     },
 
-
-
-
-
-
     "keyboard-state": {
         "numlock": true,
         "capslock": true,
@@ -169,6 +164,10 @@
             "unlocked": ""
         }
     },
+
+
+
+
 
     "hyprland/scratchpad": {
         "format": "{icon} {count}",
