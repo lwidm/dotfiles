@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 # initialize wallpaper daemon
-swww init &
+swww-daemon &
+
 # set wallpaper
-swww img ~/.bg/nixos-wallpaper-catppuccin-latte.svg &
+swww img ~/.bg/nixos-wallpaper-catppuccin-latte.png &
 
 waybar &
 dunst
