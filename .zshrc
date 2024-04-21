@@ -104,9 +104,9 @@ source $ZSH/oh-my-zsh.sh
 
 
 # Autostart X11 on login
-if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
-    exec startx
-fi
+# if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
+#     exec startx
+# fi
 
 
 # CC anc CCX compilers
