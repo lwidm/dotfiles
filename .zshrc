@@ -112,3 +112,6 @@ source $ZSH/oh-my-zsh.sh
 # CC anc CCX compilers
 CC=clang
 CXX=clang++
+
+# zoxide
+eval "$(zoxide init zsh)"
