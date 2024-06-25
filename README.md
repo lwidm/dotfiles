@@ -34,6 +34,12 @@ Run the following command in the `$HOME/Downloads` folder
 sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 ```
 
+### zsh-autosuggestions
+Run the following command to install zsh-autosuggestions
+```zsh
+clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+```
+
 ## tmux
 install tpm (tmux package manager)
 ```zsh
