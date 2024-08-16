@@ -17,6 +17,13 @@ oh-my-zsh
 install ttf-hack
 install a nerd font
 
+### .zshrc and .xinitrc
+manually remove these two files from home directory before running
+```zsh
+stow .
+```
+in the `dotfiles` directory
+
 ## Virtuabox
 sudo systemctl enable vboxservice.service
 sudo systemctl start vboxservice.serivce
