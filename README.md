@@ -48,3 +48,11 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 in tmux run `<prefix> I` to install all the packages
 
+## zoxide
+an online guide can be found in the [github repo](https://github.com/ajeetdsouza/zoxide)
+
+The recommended way to install zoxide is via the install script:
+```zsh
+curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+```
+
