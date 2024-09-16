@@ -1,69 +1,181 @@
-$surface-darkgray: #20252b;
-$surface-fg: #949494;
-$surface-lightgray: #3d464e;
-$surface-gray: #2b3238;
-$surface-red: #f87070;
-
 * {
   all: unset;
+  font-family: "Inter Nerd Font";
 }
 
-.layout-box {
+$background: rgba(00, 00, 00, 0.3);
+$widget-background: rgba(30, 30, 30, 0.4);
+$shadow: rgba(00, 00, 00, 0.4);
+$grey: #606060;
+
+$black: #3d4c5f;
+$red: #ee4f84;
+$green: #53e2ae;
+$orange: #f1fa8c;
+$blue: #92b6f4;
+$purple: #985eff;
+$teal: #24d1e7;
+$white: #e5e5e5;
+
+$border-radius: 16px;
+
+/** --------- General ---------- **/
+.phosphor_icon {
   font-family: "Phosphor";
-  background-repeat: no-repeat;
-  background-size: cover;
-  padding: 5em;
-  color: rgba($surface-fg, 0.8);
 }
 
-.net-box,
-.bat-box,
-.tm-box {
-  label {
-    font-size: 2em;
-  }
+.bar_class {
+  background-color: $background;
+  border-radius: $border-radius;
+  border-style: solid;
+  border-width: 2;
+  border-color: $green;
 }
 
-.close-btn {
-  font-size: 2em;
-  &:hover {
-    color: $surface-red;
-  }
+.module {
+  margin: 0px 0px 0px 0px;
+  border-radius: 10px 10px 0px 10px;
 }
 
-.btns-box {
-  font-size: 2.5em;
-
-  button {
-    padding: 0.4em;
-    border-radius: 0.1em;
-    background-color: rgba($surface-darkgray, 0.6);
-
-    &:hover {
-      transition:
-        200ms linear background-color,
-        border-radius;
-      background-color: rgba($surface-lightgray, 0.6);
-    }
-
-    &:first-child {
-      color: rgba($surface-red, 0.6);
-    }
-  }
+.module {
 }
 
-.sep {
-  font-size: 1.5em;
-  padding-top: 0.15em;
-  padding-left: 0.2em;
-  padding-right: 0.2em;
-  color: $surface-lightgray;
+.left_modules {
 }
 
-.sundial-lbl {
-  font-size: 1.5em;
+.center_modules {
+  margin: 0px 0px 0px 0px;
+  border-radius: 0px 0px 0px 0px;
+}
+
+.right_modules {
+}
+
+/** --------- tooltip --------- **/
+tooltip.background {
+  background-color: rgba(00, 00, 00, 0.5);
+  font-size: 18px;
+  border-radius: 10px;
+  color: $white;
+}
+
+tooltip label {
+  margin: 6px;
+}
+
+/** --------- wigets --------- **/
+.separator {
+  color: $grey;
   font-weight: bold;
-  border-radius: 0.2em;
-  border-bottom: 0.2em;
-  font-family: "Poiret One";
+  font-size: 22px;
+  margin: 0px 8px 0px 8px;
+}
+
+@mixin bat_mem_styles($color, $margin-right, $margin-left) {
+  background-color: rgba(00, 00, 00, 0);
+  margin: 0px $margin-right 0px $margin-left;
+
+  circular-progress {
+    color: $color;
+    background-color: $grey;
+  }
+
+  .progress_icon {
+    color: $color;
+    margin: 9px;
+    padding: 0.5px 3.8px 0px 0px;
+  }
+}
+
+.battery_module {
+  @include bat_mem_styles($green, 10px, 0px);
+}
+
+.memory_module {
+  @include bat_mem_styles($orange, 10px, 3px);
+}
+
+.clock_time_class {
+  color: $white;
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0px 20px 0px 5px;
+}
+
+.clock_date_class {
+  font-size: 24px;
+  margin: 0px 20px 0px -1px;
+  color: $red;
+}
+
+/** --------- calendar -------- **/
+.calendar {
+  background-color: $background;
+  border-radius: $border-radius;
+  font-family: "Inter Nerd Font";
+  font-size: 18px;
+  font-weight: normal;
+  padding: 5px 5px 5px 5px;
+  // margin-left: 10px;
+  &.highlight {
+    padding: 20px;
+  }
+}
+
+.calendar_inner {
+  padding: 10px 20px 10px 20px;
+  color: #bfc9db;
+}
+
+calendar {
+  &:selected {
+    color: $blue;
+  }
+  &.header {
+    color: $blue;
+    font-weight: bold;
+  }
+  &.button {
+    color: $green;
+  }
+  &.highlight {
+    color: $blue;
+    font-weight: bold;
+  }
+  &.indeterminate {
+    color: #bfc9db;
+  }
+}
+
+/** --------- system ---------- **/
+
+.system {
+  background-color: $background;
+  border-radius: $border-radius;
+}
+
+.system_memory_wrapper {
+  border-radius: $border-radius;
+  margin: 15px 0px 15px 20px;
+
+  circular-progress {
+    color: $orange;
+    background-color: $grey;
+    border-radius: 10px;
+  }
+}
+
+.system_memory_icon {
+  color: $orange;
+}
+
+.system_memory_icon {
+  font-size: 30px;
+  margin: 30px;
+}
+
+.system_memory_text {
+  font-size: 16;
+  color: #bbc5d7;
+  margin: 5px 0px 0px 25px;
 }

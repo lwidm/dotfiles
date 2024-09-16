@@ -1,100 +1,220 @@
-(defpoll time :interval "5s"
-  :initial `date +'{"hour":"%H","min":"%M"}'`
-  `date +'{"hour":"%H","min":"%M"}'`)
+;; --------- variables and polls ---------
+(defvar BIN_DIR "./scripts/bin")
+(defvar time_rev false)
+(defvar is_calendar_open false)
 
-(defpoll net :interval "100s"
-  :initial `N\A`
-  `nmcli -t -f SIGNAL,ACTIVE device wifi \
-    |awk -F':' '{if($2=="yes")print$1}'`)
+(defpoll clock_time :interval "5s" `date "+\%k \%M"`)
+;; (defpoll clock_time :interval "5s" `date '+\%l \%M' \%p`)
+(defpoll clock_date :interval "10h" `date "+\%d \%m \%Y"`)
+(defpoll date_json :interval "10h" `date '+{"d":"\%d", "m":"\%m", "Y":"\%Y"}'`)
+;; (defpoll system_memory_poll :interval "5s" `${BIN_DIR}/format_number $( ${EWW_CMD.available_mem} / 1024 / 1024 ) 0 `)
+(defpoll system_memory_poll :interval "5s" `echo ${EWW_CMD} get available_mem` )
+;; (defpoll system_memory_poll :interval "5s" (concat `scripts/bin/format_number $( `, EWW_CMD.available_mem )` / 1024 / 1024 ) 0 `)
 
-(defwidget _buttons [shutdown shutdown_icon reboot reboot_icon logout logout_icon]
-  (box  :class "btns-box" :spacing 5
-        :vexpand true :hexpand true
-        :valign "end" :halign "end"
-        :space-evenly false
-    (button :onclick shutdown shutdown_icon)
-    (button :onclick reboot reboot_icon)
-    (button :onclick logout logout_icon)))
 
-(defwidget _network [strength offline excellent good okay slow very_slow]
-  (box  :class "net-box"
-        :space-evenly false
-        :spacing 8
-    (label :text {strength == "" ? offline :
-      strength <= 20 ? very_slow :
-        strength <= 40 ? slow :
-          strength <= 60 ? okay :
-            strength <= 80 ? good : excellent})))
 
-(defwidget _battery [battery status zero  one  two  three  four  five  six  seven  eight  nine  ten
-                                   czero cone ctwo cthree cfour cfive csix cseven ceight cnine cten]
-  (box :class "bat-box" :space-evenly false :spacing 8
-    (label :text {status == 'Charging' ?
-    (battery < 10 ? czero :
-        battery < 20 ? cone :
-          battery < 30 ? ctwo :
-            battery < 40 ? cthree :
-              battery < 50 ? cfour :
-                battery < 60 ? cfive :
-                  battery < 70 ? csix :
-                    battery < 80 ? cseven :
-                      battery < 90 ? ceight :
-                        battery < 100 ? cnine : cten) :
-      (battery < 10 ? zero :
-        battery < 20 ? one :
-          battery < 30 ? two :
-            battery < 40 ? three :
-              battery < 50 ? four :
-                battery < 60 ? five :
-                  battery < 70 ? six :
-                    battery < 80 ? seven :
-                      battery < 90 ? eight :
-                        battery < 100 ? nine : ten) })))
 
-(defwidget _sundial []
-  (label  :class "sundial-lbl" :halign "end" :hexpand true
-          :text { time.hour >= 2 && time.hour < 5 ? "Early Morning" :
-                  time.hour < 6 ? "Dawn" :
-                  time.hour < 9 ? "Morning" :
-                  time.hour < 12 ? "Late Morning" :
-                  time.hour == 12 && time.min <= 29 ? "Midday" :
-                  time.hour < 15 ? "Afternoon" :
-                  time.hour < 17 ? "Late Afternoon" :
-                  time.hour < 18 ? "Early Evening" :
-                  time.hour < 20 ? "Dusk" :
-                  time.hour < 22 ? "Late Evening" :
-                  time.hour > 21 ? "Night" :
-                  time.hour < 1 ? "Midnight" : "Late Night"}))
+;; dummy
+(defwidget dummy []
+  (box))
 
-(defwidget powermenu_layout []
-  (box  :class "layout-box" :space-evenly false :orientation "vertical"
-        :style "background-image: url('./wallpaper.png')"
-    (box :valign "start" :space-evenly false :spacing 25
-      (_sundial)
-      (_battery :status {EWW_BATTERY.BAT0.status}
-                :battery {EWW_BATTERY.BAT0.capacity}
-                :zero "󰂎" :one "󰁺" :two "󰁻" :three "󰁼" :four "󰁽"
-                :five "󰁾" :six "󰁿" :seven "󰂀" :eight "󰂁" :nine "󰂂" :ten "󰁹"
-                :czero "󰢟 " :cone "󰢜 " :ctwo "󰂆 " :cthree "󰂇 " :cfour "󰂈 "
-                :cfive "󰢝 " :csix "󰂉 " :cseven "󰢞 " :ceight "󰂊 " :cnine "󰂋 " :cten "󰂅 ")
-      (_network :strength net :offline "󰣵 " :excellent "󰣺 " :good "󰣸 "
-                :okay "󰣶 " :slow "󰣴 " :very_slow "󰣾 ")
-      (label :text "|" :class "sep")
-      (button :onclick "eww close powermenu" :class "close-btn" " "))
-    (box :space-evenly false :hexpand true :vexpand true
-      (box :spacing 15 :class "tm-box" :space-evenly false :valign "end"
-           :halign "start"
-        (label :text " ")
-        (label :text "${time.hour} ${time.min}"))
-      (_buttons :shutdown "poweroff" :reboot "reboot"
-                :logout "loginctl kill-session self"
-                :shutdown_icon "" :reboot_icon "" :logout_icon "󰗽 "))))
+;; debugging
+(defvar debug_var "nodebug")
+(defwidget debug []
+  (label :text debug_var))
 
-(defwindow powermenu
-  :monitor 1
+
+
+;; ---------- widgets ---------
+
+(defwidget sep []
+  (box  :class "module-2"
+        :vexpand "false"
+        :hexpand "false"
+        (label  :class "separator"
+                :text "|")))
+
+(defwidget gap []
+  (box  :orientation "h"
+        :hexpand "false"
+        :visible "true"
+        :width "150"))
+
+(defwidget battery_module []
+  (box  :class "battery_module"
+        :vexpand "false"
+        :hexpand "false"
+    (circular-progress  :value {EWW_BATTERY["BAT0"].capacity}
+                        :thickness 4
+      (button :class "progress_icon"
+              :limit-width 2
+              :tooltop "battery on ${EWW_BATTERY["BAT0"].capacity}%"
+              :show_truncated false
+              :wrap false
+              ""))))
+
+(defwidget memory_module []
+  (box  :class "memory_module"
+        :vexpand "false"
+        :hexpand "false" 
+    (circular-progress  :value {EWW_RAM.used_mem_perc}
+                        :thickness 4
+      (button :class "progress_icon"
+              :limit-width 2
+              :tooltip "using ${EWW_RAM.used_mem_perc}% ram"
+              :onclick "${EWW_CMD} open --toggle system"
+              :show_truncated false
+              :wrap false
+              ""))))
+
+(defwidget clock_module []
+  (eventbox :onhover "${EWW_CMD} update time_rev=true"
+            :onhoverlost "${EWW_CMD} update time_rev=false"
+    (box  :class "module"
+          :space-evenly "false"
+          :orientation "h"
+          :spacing "0"
+      (label  :class "clock_time_class"
+              :text clock_time)
+      (revealer :transition "slideleft"
+                :reveal time_rev
+                :duration "350ms"
+        (button :class "clock_date_class"
+                :onclick  "
+                          if [ \$( ${EWW_CMD} get is_calendar_open ) = 'false' ]; then
+                            ${EWW_CMD} open calendar &&
+                            ${EWW_CMD} update is_calendar_open=true
+                          else
+                            ${EWW_CMD} close calendar &&
+                            ${EWW_CMD} update is_calendar_open=false &&
+                            ${EWW_CMD} update time_rev=false
+                          fi
+                          "
+                "${date_json.d} ${date_json.m} ${date_json.Y}")))))
+
+;; ---------- top bar structure ----------
+;; define widget groups
+(defwidget left []
+  (box  :orientation "h" 
+        :space-evenly false  
+        :halign "start"
+        :class "left_modules"
+    (dummy)))
+
+(defwidget center []
+  (box  :orientation "h" 
+        :space-evenly false  
+        :halign "center"
+        :class "center_modules"
+    (debug)))
+
+(defwidget right []
+  (box  :orientation "h" 
+        :space-evenly false  
+        :halign "end"
+        :class "right_modules"
+  (battery_module)
+  (memory_module)
+  (sep)
+  (clock_module)))
+
+;; bar
+(defwidget bar_layout []
+  (centerbox  :class "bar_class"
+              :orientation "h"
+    (left)
+    (center)
+    (right)))
+
+(defwindow bar0
+  :exclusive false
+  :monitor 0
+  :geometry (geometry 
+    :x "15px"
+    :y "9px"
+    :width "98%"
+    :height "30px"
+    :anchor "top center")
   :stacking "fg"
-  :windowtype "normal"
-  :wm-ignore true
-  :geometry (geometry :width "100%" :height "100%")
-  (powermenu_layout))
+  :windowtype "dock"
+  (bar_layout))
+
+
+;; --------- calender ----------
+
+(defwidget calendar_module []
+  (box  :class "calendar"
+        :orientation "v"
+        (box :class "calendar_inner"
+          (calendar :day "${date_json.d}"
+                    :year "${date_json.Y}"
+                    :show-week-numbers true))))
+
+(defwindow calendar
+  :stacking "fg"
+  :focusable "false"
+  :screen 1
+  :monitor 0
+  :geometry (geometry
+    :x "20px"
+    :y "7%"
+    :anchor "top right"
+    :width "270px"
+    :height "60px")
+  (calendar_module))
+
+;; --------- system ---------
+
+(defwidget system_module []
+  (box  :class "system"
+        :orientation "v"
+        :space-evenly "false"
+        :hexpand "false"
+        :vexpand "false"
+        :spacing 0
+    (box  :class "system_memory_wrapper"
+          :orientation "h"
+          :space-evenly "false"
+          :halign "start"
+      (circular-progress :value {EWW_RAM.used_mem_perc}
+                         :thickness 9
+        (label  :class "system_memory_icon Phosphor_icon"
+                :text ""
+                :limit-width 2
+                :show_truncated false
+                :wrap false
+                :angle 0.0))
+      (box  :orientation "v"
+            :halign "start"
+            :spacing 0
+            :hexpand "false"
+            :vexpand "false"
+            (label  :class "system_memory_text"
+                    :text "memory"
+                    :halign "start"
+                    :limit-width 9
+                    :show_truncated false
+                    :wrap false)
+            (label  :class "system_memory_subtext"
+                    ;; :text "${round((EWW_RAM.available_mem / 1024 / 1024),0)} | ${round((EWW_RAM.total_mem / 1024 / 1024),0)} mb"
+                    :text system_memory_poll
+                    :halign "start")))))
+
+
+(defwindow system
+  :stacking "fg"
+  :focusable "false"
+  :screen 1
+  :monitor 0
+  :geometry (geometry 
+    :x "20px"
+    :y "7%"
+    :anchor "top right"
+    :width "290px"
+    :height "120px")
+  (system_module))
+
+
+
+
 
