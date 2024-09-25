@@ -3,17 +3,18 @@
 This directory contains the dotfiles for my system
 
 ## Requirements
-git
-wl-clipboard
-ttf-hack
-virtualbox-guest-utils
-waybar
-sway
-ttf-font-awesome
-wofi
-oh-my-zsh
-tmux
-zsh
+- git
+- wl-clipboard
+- ttf-hack
+- virtualbox-guest-utils
+- waybar
+- sway
+- ttf-font-awesome
+- wofi
+- oh-my-zsh
+- tmux
+- zsh
+- eza
 
 ### fonts
 install ttf-hack
