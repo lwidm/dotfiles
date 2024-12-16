@@ -101,9 +101,9 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias ls="eza -a --icons=always --colour=always"
-alias ll="eza -la --icons=always --colour=always"
+alias ll="eza -al --icons=always --colour=always"
 alias lt="eza -aT --icons=always --colour=always"
-alias llt="eza -laT --icons=always --colour=always"
+alias llt="eza -alT --icons=always --colour=always"
 
 # Conda
 
