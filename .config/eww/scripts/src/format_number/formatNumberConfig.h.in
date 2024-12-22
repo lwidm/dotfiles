@@ -1,0 +1,4 @@
+// the configured options and settings for formatNumber
+// clang-format off
+#define formatNumber_VERSION_MAJOR @formatNumber_VERSION_MAJOR@
+#define formatNumber_VERSION_MINOR @formatNumber_VERSION_MINOR@

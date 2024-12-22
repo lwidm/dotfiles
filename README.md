@@ -12,27 +12,31 @@ This directory contains the dotfiles for my system
 - ttf-font-awesome
 - wofi
 - oh-my-zsh
-- tmux
-- zsh
-- eza
 
 ### fonts
+
 install ttf-hack
 install a nerd font
 
 ### .zshrc and .xinitrc
+
 manually remove these two files from home directory before running
+
 ```zsh
 stow .
 ```
+
 in the `dotfiles` directory
 
 ## Virtuabox
+
 sudo systemctl enable vboxservice.service
 sudo systemctl start vboxservice.serivce
 
 ## Zsh
+
 make zsh the default console <\br>
+
 ```zsh
 sudo chsh -s /bin/zsh
 ```
@@ -43,23 +47,25 @@ in case of msys you need to do the following
 
 
 ### oh my zsh
-**install oh my zsh:** 
+
+**install oh my zsh:**
 Run the following command in the `$HOME/Downloads` folder
+
 ```zsh
 sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 ```
 
 ### zsh-autosuggestions
-WARNING: in case of msys terminal you need to replace the `~` with `/c/msys64/home/<user>`
 Run the following command to install zsh-autosuggestions
+
 ```zsh
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 ```
 
 
 ## tmux
-WARNING: in case of msys terminal you need to replace the `~` with `/c/msys64/home/<user>`
 install tpm (tmux package manager)
+
 ```zsh
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 ```
@@ -67,11 +73,15 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 in tmux run `<prefix> I` to install all the packages
 
 ## zoxide
-WARNING: this step will not work on msys. Use the msys packages instead
 an online guide can be found in the [github repo](https://github.com/ajeetdsouza/zoxide)
 
 The recommended way to install zoxide is via the install script:
+
 ```zsh
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 ```
 
+# Possible Bugs
+
+- zoxide not found
+  This is usually due to the `.zshrc`/`.bashrc` file not being overwritten by the `stow .` command. This can be solved by deleting this file and running the `stow` command again.

@@ -1,0 +1,220 @@
+;; --------- variables and polls ---------
+(defvar BIN_DIR "./scripts/bin")
+(defvar time_rev false)
+(defvar is_calendar_open false)
+
+(defpoll clock_time :interval "5s" `date "+\%k \%M"`)
+;; (defpoll clock_time :interval "5s" `date '+\%l \%M' \%p`)
+(defpoll clock_date :interval "10h" `date "+\%d \%m \%Y"`)
+(defpoll date_json :interval "10h" `date '+{"d":"\%d", "m":"\%m", "Y":"\%Y"}'`)
+;; (defpoll system_memory_poll :interval "5s" `${BIN_DIR}/format_number $( ${EWW_CMD.available_mem} / 1024 / 1024 ) 0 `)
+(defpoll system_memory_poll :interval "5s" `echo ${EWW_CMD} get available_mem` )
+;; (defpoll system_memory_poll :interval "5s" (concat `scripts/bin/format_number $( `, EWW_CMD.available_mem )` / 1024 / 1024 ) 0 `)
+
+
+
+
+;; dummy
+(defwidget dummy []
+  (box))
+
+;; debugging
+(defvar debug_var "nodebug")
+(defwidget debug []
+  (label :text debug_var))
+
+
+
+;; ---------- widgets ---------
+
+(defwidget sep []
+  (box  :class "module-2"
+        :vexpand "false"
+        :hexpand "false"
+        (label  :class "separator"
+                :text "|")))
+
+(defwidget gap []
+  (box  :orientation "h"
+        :hexpand "false"
+        :visible "true"
+        :width "150"))
+
+(defwidget battery_module []
+  (box  :class "battery_module"
+        :vexpand "false"
+        :hexpand "false"
+    (circular-progress  :value {EWW_BATTERY["BAT0"].capacity}
+                        :thickness 4
+      (button :class "progress_icon"
+              :limit-width 2
+              :tooltop "battery on ${EWW_BATTERY["BAT0"].capacity}%"
+              :show_truncated false
+              :wrap false
+              ""))))
+
+(defwidget memory_module []
+  (box  :class "memory_module"
+        :vexpand "false"
+        :hexpand "false" 
+    (circular-progress  :value {EWW_RAM.used_mem_perc}
+                        :thickness 4
+      (button :class "progress_icon"
+              :limit-width 2
+              :tooltip "using ${EWW_RAM.used_mem_perc}% ram"
+              :onclick "${EWW_CMD} open --toggle system"
+              :show_truncated false
+              :wrap false
+              ""))))
+
+(defwidget clock_module []
+  (eventbox :onhover "${EWW_CMD} update time_rev=true"
+            :onhoverlost "${EWW_CMD} update time_rev=false"
+    (box  :class "module"
+          :space-evenly "false"
+          :orientation "h"
+          :spacing "0"
+      (label  :class "clock_time_class"
+              :text clock_time)
+      (revealer :transition "slideleft"
+                :reveal time_rev
+                :duration "350ms"
+        (button :class "clock_date_class"
+                :onclick  "
+                          if [ \$( ${EWW_CMD} get is_calendar_open ) = 'false' ]; then
+                            ${EWW_CMD} open calendar &&
+                            ${EWW_CMD} update is_calendar_open=true
+                          else
+                            ${EWW_CMD} close calendar &&
+                            ${EWW_CMD} update is_calendar_open=false &&
+                            ${EWW_CMD} update time_rev=false
+                          fi
+                          "
+                "${date_json.d} ${date_json.m} ${date_json.Y}")))))
+
+;; ---------- top bar structure ----------
+;; define widget groups
+(defwidget left []
+  (box  :orientation "h" 
+        :space-evenly false  
+        :halign "start"
+        :class "left_modules"
+    (dummy)))
+
+(defwidget center []
+  (box  :orientation "h" 
+        :space-evenly false  
+        :halign "center"
+        :class "center_modules"
+    (debug)))
+
+(defwidget right []
+  (box  :orientation "h" 
+        :space-evenly false  
+        :halign "end"
+        :class "right_modules"
+  (battery_module)
+  (memory_module)
+  (sep)
+  (clock_module)))
+
+;; bar
+(defwidget bar_layout []
+  (centerbox  :class "bar_class"
+              :orientation "h"
+    (left)
+    (center)
+    (right)))
+
+(defwindow bar0
+  :exclusive false
+  :monitor 0
+  :geometry (geometry 
+    :x "15px"
+    :y "9px"
+    :width "98%"
+    :height "30px"
+    :anchor "top center")
+  :stacking "fg"
+  :windowtype "dock"
+  (bar_layout))
+
+
+;; --------- calender ----------
+
+(defwidget calendar_module []
+  (box  :class "calendar"
+        :orientation "v"
+        (box :class "calendar_inner"
+          (calendar :day "${date_json.d}"
+                    :year "${date_json.Y}"
+                    :show-week-numbers true))))
+
+(defwindow calendar
+  :stacking "fg"
+  :focusable "false"
+  :screen 1
+  :monitor 0
+  :geometry (geometry
+    :x "20px"
+    :y "7%"
+    :anchor "top right"
+    :width "270px"
+    :height "60px")
+  (calendar_module))
+
+;; --------- system ---------
+
+(defwidget system_module []
+  (box  :class "system"
+        :orientation "v"
+        :space-evenly "false"
+        :hexpand "false"
+        :vexpand "false"
+        :spacing 0
+    (box  :class "system_memory_wrapper"
+          :orientation "h"
+          :space-evenly "false"
+          :halign "start"
+      (circular-progress :value {EWW_RAM.used_mem_perc}
+                         :thickness 9
+        (label  :class "system_memory_icon Phosphor_icon"
+                :text ""
+                :limit-width 2
+                :show_truncated false
+                :wrap false
+                :angle 0.0))
+      (box  :orientation "v"
+            :halign "start"
+            :spacing 0
+            :hexpand "false"
+            :vexpand "false"
+            (label  :class "system_memory_text"
+                    :text "memory"
+                    :halign "start"
+                    :limit-width 9
+                    :show_truncated false
+                    :wrap false)
+            (label  :class "system_memory_subtext"
+                    ;; :text "${round((EWW_RAM.available_mem / 1024 / 1024),0)} | ${round((EWW_RAM.total_mem / 1024 / 1024),0)} mb"
+                    :text system_memory_poll
+                    :halign "start")))))
+
+
+(defwindow system
+  :stacking "fg"
+  :focusable "false"
+  :screen 1
+  :monitor 0
+  :geometry (geometry 
+    :x "20px"
+    :y "7%"
+    :anchor "top right"
+    :width "290px"
+    :height "120px")
+  (system_module))
+
+
+
+
+

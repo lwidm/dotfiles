@@ -1,0 +1,4 @@
+// the configured options and settings for memory_json
+// clang-format off
+#define memoryJson_VERSION_MAJOR @memoryJson_VERSION_MAJOR@
+#define memoryJson_VERSION_MINOR @memoryJson_VERSION_MINOR@

@@ -10,6 +10,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="robbyrussell"
 
+
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
@@ -100,9 +101,9 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias ls="eza -a --icons=always --colour=always"
-alias ll="eza -la --icons=always --colour=always"
+alias ll="eza -al --icons=always --colour=always"
 alias lt="eza -aT --icons=always --colour=always"
-alias llt="eza -laT --icons=always --colour=always"
+alias llt="eza -alT --icons=always --colour=always"
 
 # Conda
 
@@ -119,3 +120,22 @@ CXX=clang++
 
 # zoxide
 eval "$(zoxide init zsh)"
+
+
+# Function to check if we're in a nix-shell
+function in_nix_shell {
+  [[ -n "$IN_NIX_SHELL" ]]
+}
+
+# Backup current theme
+export ORIGINAL_ZSH_THEME=$ZSH_THEME
+
+# Change theme if in nix-shell
+if in_nix_shell; then
+  export ZSH_THEME="simple"
+else
+  export ZSH_THEME="$ORIGINAL_ZSH_THEME"
+fi
+
+# Load oh-my-zsh
+source $ZSH/oh-my-zsh.sh
