@@ -2,6 +2,8 @@
 
 This directory contains the dotfiles for my system
 
+**Create the `~/.config`directory before running `stow`**. This is important otherwise this will be simlinked
+
 ## Requirements
 - git
 - wl-clipboard
