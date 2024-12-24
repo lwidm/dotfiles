@@ -54,7 +54,10 @@ in case of msys you need to do the following
 Run the following command in the `$HOME/Downloads` folder
 
 ```zsh
+rm -r $HOME/.oh-my-zsh
 sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
+cd $HOME/dotfiles
+stow .
 ```
 
 ### zsh-autosuggestions
