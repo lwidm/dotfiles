@@ -1,0 +1,128 @@
+#
+# /home/lukas/dotfiles/nvidia/README.md
+#
+# Configuration file for nvidia-settings - the NVIDIA Settings utility
+# Generated on Mon Dec 23 12:37:36 2024
+#
+
+# ConfigProperties:
+
+RcFileLocale = C
+DisplayStatusBar = Yes
+SliderTextEntries = Yes
+IncludeDisplayNameInConfigFile = No
+UpdateRulesOnProfileNameChange = Yes
+Timer = PowerMizer_Monitor_(GPU_0),Yes,1000
+Timer = Thermal_Monitor_(GPU_0),Yes,1000
+Timer = Memory_Used_(GPU_0),Yes,3000
+
+# Attributes:
+
+0/SyncToVBlank=1
+0/LogAniso=0
+0/FSAA=0
+0/TextureClamping=1
+0/FXAA=0
+0/AllowFlipping=1
+0/FSAAAppControlled=1
+0/LogAnisoAppControlled=1
+0/OpenGLImageSettings=0
+0/FSAAAppEnhanced=0
+0/ShowGraphicsVisualIndicator=0
+[DPY:DP-4.8]/RedBrightness=0.000000
+[DPY:DP-4.8]/GreenBrightness=0.000000
+[DPY:DP-4.8]/BlueBrightness=0.000000
+[DPY:DP-4.8]/RedContrast=0.000000
+[DPY:DP-4.8]/GreenContrast=0.000000
+[DPY:DP-4.8]/BlueContrast=0.000000
+[DPY:DP-4.8]/RedGamma=1.000000
+[DPY:DP-4.8]/GreenGamma=1.000000
+[DPY:DP-4.8]/BlueGamma=1.000000
+[DPY:DP-4.8]/Dithering=0
+[DPY:DP-4.8]/DitheringMode=0
+[DPY:DP-4.8]/DitheringDepth=0
+[DPY:DP-4.8]/DigitalVibrance=0
+[DPY:DP-4.8]/ColorSpace=0
+[DPY:DP-4.8]/ColorRange=0
+[DPY:DP-4.8]/SynchronousPaletteUpdates=0
+[DPY:DP-4.1.8]/RedBrightness=0.000000
+[DPY:DP-4.1.8]/GreenBrightness=0.000000
+[DPY:DP-4.1.8]/BlueBrightness=0.000000
+[DPY:DP-4.1.8]/RedContrast=0.000000
+[DPY:DP-4.1.8]/GreenContrast=0.000000
+[DPY:DP-4.1.8]/BlueContrast=0.000000
+[DPY:DP-4.1.8]/RedGamma=1.000000
+[DPY:DP-4.1.8]/GreenGamma=1.000000
+[DPY:DP-4.1.8]/BlueGamma=1.000000
+[DPY:DP-4.1.8]/Dithering=0
+[DPY:DP-4.1.8]/DitheringMode=0
+[DPY:DP-4.1.8]/DitheringDepth=0
+[DPY:DP-4.1.8]/DigitalVibrance=0
+[DPY:DP-4.1.8]/ColorSpace=0
+[DPY:DP-4.1.8]/ColorRange=0
+[DPY:DP-4.1.8]/SynchronousPaletteUpdates=0
+[DPY:DP-4.1.1.1]/RedBrightness=0.000000
+[DPY:DP-4.1.1.1]/GreenBrightness=0.000000
+[DPY:DP-4.1.1.1]/BlueBrightness=0.000000
+[DPY:DP-4.1.1.1]/RedContrast=0.000000
+[DPY:DP-4.1.1.1]/GreenContrast=0.000000
+[DPY:DP-4.1.1.1]/BlueContrast=0.000000
+[DPY:DP-4.1.1.1]/RedGamma=1.000000
+[DPY:DP-4.1.1.1]/GreenGamma=1.000000
+[DPY:DP-4.1.1.1]/BlueGamma=1.000000
+[DPY:DP-4.1.1.1]/Dithering=0
+[DPY:DP-4.1.1.1]/DitheringMode=0
+[DPY:DP-4.1.1.1]/DitheringDepth=0
+[DPY:DP-4.1.1.1]/DigitalVibrance=0
+[DPY:DP-4.1.1.1]/ColorSpace=0
+[DPY:DP-4.1.1.1]/ColorRange=0
+[DPY:DP-4.1.1.1]/SynchronousPaletteUpdates=0
+[DPY:DP-0]/Dithering=0
+[DPY:DP-0]/DitheringMode=0
+[DPY:DP-0]/DitheringDepth=0
+[DPY:DP-0]/ColorSpace=0
+[DPY:DP-0]/ColorRange=0
+[DPY:DP-0]/SynchronousPaletteUpdates=0
+[DPY:DP-1]/Dithering=0
+[DPY:DP-1]/DitheringMode=0
+[DPY:DP-1]/DitheringDepth=0
+[DPY:DP-1]/ColorSpace=0
+[DPY:DP-1]/ColorRange=0
+[DPY:DP-1]/SynchronousPaletteUpdates=0
+[DPY:HDMI-0]/Dithering=0
+[DPY:HDMI-0]/DitheringMode=0
+[DPY:HDMI-0]/DitheringDepth=0
+[DPY:HDMI-0]/ColorSpace=0
+[DPY:HDMI-0]/ColorRange=0
+[DPY:HDMI-0]/SynchronousPaletteUpdates=0
+[DPY:DP-2]/Dithering=0
+[DPY:DP-2]/DitheringMode=0
+[DPY:DP-2]/DitheringDepth=0
+[DPY:DP-2]/ColorSpace=0
+[DPY:DP-2]/ColorRange=0
+[DPY:DP-2]/SynchronousPaletteUpdates=0
+[DPY:DP-3]/Dithering=0
+[DPY:DP-3]/DitheringMode=0
+[DPY:DP-3]/DitheringDepth=0
+[DPY:DP-3]/ColorSpace=0
+[DPY:DP-3]/ColorRange=0
+[DPY:DP-3]/SynchronousPaletteUpdates=0
+[DPY:DP-4]/Dithering=0
+[DPY:DP-4]/DitheringMode=0
+[DPY:DP-4]/DitheringDepth=0
+[DPY:DP-4]/ColorSpace=0
+[DPY:DP-4]/ColorRange=0
+[DPY:DP-4]/SynchronousPaletteUpdates=0
+[DPY:DP-5]/Dithering=0
+[DPY:DP-5]/DitheringMode=0
+[DPY:DP-5]/DitheringDepth=0
+[DPY:DP-5]/ColorSpace=0
+[DPY:DP-5]/ColorRange=0
+[DPY:DP-5]/SynchronousPaletteUpdates=0
+[DPY:USB-C-0]/Dithering=0
+[DPY:USB-C-0]/DitheringMode=0
+[DPY:USB-C-0]/DitheringDepth=0
+[DPY:USB-C-0]/ColorSpace=0
+[DPY:USB-C-0]/ColorRange=0
+[DPY:USB-C-0]/SynchronousPaletteUpdates=0
+[GPU:0]/GPUPowerMizerMode=2

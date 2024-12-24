@@ -40,6 +40,9 @@
 *color7:	#707880
 *color15:	#C5C8C6
 
+!! dpi and sizes
+Xcursor.size: 24
+Xft.dpi: 90
 
 !! URxvt Appearance
 URxvt.letterSpace:		0

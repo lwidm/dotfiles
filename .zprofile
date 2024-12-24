@@ -7,4 +7,7 @@ export CC="clang-12"
 export CXX="clang++-12"
 export PYTHONBREAKPOINT="pudb.set_trace"
 export GIT_EDITOR=$VIM
+export MYSYSTEM=debianDesktop
 
+export PATH=$PATH:$HOME/.local/bin
+export PATH=$PATH:$HOME/.cargo/bin
