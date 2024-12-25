@@ -108,6 +108,7 @@ alias llt="eza -alT --icons=always --colour=always"
 # alias ll="exa -al --icons --colour=always"
 # alias lt="exa -aT --icons --colour=always"
 # alias llt="exa -alT --icons --colour=always"
+alias cisco-start="gtk-launch com.cisco.secureclient.gui"
 
 # Conda
 

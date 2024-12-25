@@ -4,3 +4,6 @@
 .local/share
 .local/etc
 .local/include
+.git
+.gitignore
+.stow-local-ignore
