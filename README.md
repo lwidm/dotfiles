@@ -67,6 +67,11 @@ Run the following command to install zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 ```
 
+## MYSYSTEM environment variable
+create file `~\.MYSYSTEM`and add the following line
+```
+export MYSYSTEM=SystemName
+```
 
 ## tmux
 install tpm (tmux package manager)
