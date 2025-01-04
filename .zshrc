@@ -117,6 +117,10 @@ if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
     exec startx
 fi
 
+# Environment variables
+if [ -f ~/.MYSYSTEM ]; then
+  source ~/.MYSYSTEM
+fi
 
 # CC anc CCX compilers
 CC=clang
