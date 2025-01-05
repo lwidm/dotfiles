@@ -200,6 +200,9 @@ for_window [class="kitty"] border pixel 0
 # Cloud storage
 exec --no-startup-id rclone mount --progress --vfs-cache-mode full OneDrive: ~/OneDrive-mount
 
+# ---------- Additional Keybinds ----------
+bindsym $mod+Shift+s exec --no-startup-id flameshot gui
+
 # ---------- Workspaces ---------
 
 workspace 1 output DP-4.8
