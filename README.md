@@ -9,11 +9,12 @@ This directory contains the dotfiles for my system
 - wl-clipboard
 - ttf-hack
 - virtualbox-guest-utils
-- waybar
 - sway
 - ttf-font-awesome
 - wofi
 - oh-my-zsh
+- polybar
+- hyprpaper
 
 ### fonts
 
