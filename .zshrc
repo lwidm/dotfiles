@@ -112,14 +112,16 @@ alias cisco-start="gtk-launch com.cisco.secureclient.gui"
 
 # Conda
 
-# Autostart X11 on login
-if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
-    exec startx
-fi
-
 # Environment variables
 if [ -f ~/.MYSYSTEM ]; then
   source ~/.MYSYSTEM
+fi
+
+# Autostart X11 on login
+if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebianLaptop" ]]; then
+  if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
+    exec startx
+  fi
 fi
 
 # CC anc CCX compilers

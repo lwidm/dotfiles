@@ -20,10 +20,14 @@ This directory contains the dotfiles for my system
 install ttf-hack
 install a nerd font
 
-### .zshrc and .xinitrc
+### **!!! DO this before running stow command!!!**
+```zsh
+rm ~/.zshrc ~/.bashrc
+mkdir ~/.local/bin ~/.local/share ~/.local/state ~/.local/include
+mkdir ~/.config
+```
 
-manually remove these two files from home directory before running
-
+### Main stow command
 ```zsh
 stow .
 ```
