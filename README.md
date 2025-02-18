@@ -24,8 +24,8 @@ install a nerd font
 ### **!!! DO this before running stow command!!!**
 ```zsh
 rm ~/.zshrc ~/.bashrc
-mkdir ~/.local/bin ~/.local/share ~/.local/state ~/.local/include
-mkdir ~/.config
+mkdir -p ~/.local/bin ~/.local/share ~/.local/state ~/.local/include
+mkdir -p ~/.config
 ```
 
 ### Main stow command
