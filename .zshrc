@@ -132,6 +132,9 @@ if [[ "$MYSYSTEM" == "ArchDesktop" ]]; then
   export QT_AUTO_SCREEN_SCALE_FACTOR=1
   export QT_SCALE_FACTOR=2
 fi
+if [[ "$MYSYSTEM" == "wslDebianDesktop" || "$MYSYSTEM" == "wslDebianLaptop" ]]; then
+  export PATH="$PATH:/usr/nvim-linux-x86_64/bin"
+fi
 
 # CC anc CCX compilers
 CC=clang
@@ -158,19 +161,4 @@ fi
 
 # Load oh-my-zsh
 source $ZSH/oh-my-zsh.sh
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/lukas/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/lukas/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/lukas/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/lukas/anaconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
 
