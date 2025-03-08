@@ -40,7 +40,7 @@
 *color7:	#707880
 *color15:	#C5C8C6
 
-!! dpi and sizes
+!! dpi and sizes (96 DPI x 1.5 = 144)
 Xcursor.size: 24
 Xft.dpi: 90
 

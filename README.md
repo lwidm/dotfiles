@@ -9,21 +9,26 @@ This directory contains the dotfiles for my system
 - wl-clipboard
 - ttf-hack
 - virtualbox-guest-utils
-- waybar
 - sway
 - ttf-font-awesome
 - wofi
 - oh-my-zsh
+- polybar
+- hyprpaper
 
 ### fonts
 
 install ttf-hack
 install a nerd font
 
-### .zshrc and .xinitrc
+### **!!! DO this before running stow command!!!**
+```zsh
+rm ~/.zshrc ~/.bashrc
+mkdir -p ~/.local/bin ~/.local/share ~/.local/state ~/.local/include
+mkdir -p ~/.config
+```
 
-manually remove these two files from home directory before running
-
+### Main stow command
 ```zsh
 stow .
 ```
@@ -84,9 +89,11 @@ in tmux run `<prefix> I` to install all the packages
 
 ## zoxide
 an online guide can be found in the [github repo](https://github.com/ajeetdsouza/zoxide)
-
-The recommended way to install zoxide is via the install script:
-
+- On Arch i recommend using pacman
+```zsh
+sudo pacman -S zoxide
+```
+- The recommended way to install zoxide is via the install script:
 ```zsh
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 ```
