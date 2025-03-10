@@ -4,7 +4,6 @@
 # Should you change your keyboard layout some time, delete
 # this file and re-run i3-config-wizard(1).
 #
-
 # i3 config file (v4)
 #
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
@@ -225,6 +224,7 @@ gaps outer 0
 # Matlab figures
 for_window [title="^Figure.*"] floating enable
 for_window [class="sun-awt-X11-XFramePeer"] floating enable
+for_window [class="Gnuplot"] floating enable, move position center
 
 # Catpuccin colour scheme
 include ~/.config/i3/catppuccin-mocha
