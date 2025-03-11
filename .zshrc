@@ -134,6 +134,9 @@ if [[ "$MYSYSTEM" == "ArchDesktop" ]]; then
 fi
 if [[ "$MYSYSTEM" == "wslDebianDesktop" || "$MYSYSTEM" == "wslDebianLaptop" ]]; then
   export PATH="$PATH:/usr/nvim-linux-x86_64/bin"
+  if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval "$(ssh-agent -s)"
+  fi
 fi
 
 # CC anc CCX compilers
