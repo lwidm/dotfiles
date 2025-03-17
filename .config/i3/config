@@ -221,10 +221,10 @@ gaps inner 8
 # gaps outer 20
 gaps outer 0
 
-# Matlab figures
+# plotting figures
 for_window [title="^Figure.*"] floating enable
 for_window [class="sun-awt-X11-XFramePeer"] floating enable
-for_window [class="Gnuplot"] floating enable, move position center
+for_window [class="gnuplot"] floating enable
 
 # Catpuccin colour scheme
 include ~/.config/i3/catppuccin-mocha
