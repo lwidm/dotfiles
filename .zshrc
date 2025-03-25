@@ -134,8 +134,13 @@ if [[ "$MYSYSTEM" == "ArchDesktop" ]]; then
 fi
 if [[ "$MYSYSTEM" == "wslDebianDesktop" || "$MYSYSTEM" == "wslDebianLaptop" ]]; then
   export PATH="$PATH:/usr/nvim-linux-x86_64/bin"
+  # Start SSH Agent and add key
   if [ -z "$SSH_AUTH_SOCK" ]; then
-    eval "$(ssh-agent -s)"
+    eval "$(ssh-agent -s)" > /dev/null
+    # ssh-add ~/.ssh/id_ed25519 2>/dev/null
+    # ssh-add ~/.ssh/id_ed25519_euler 2>/dev/null
+    echo "fix wslg"
+    sudo ~/wslg_fix.sh
   fi
 fi
 
