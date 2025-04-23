@@ -118,8 +118,9 @@ if [ -f ~/.MYSYSTEM ]; then
 fi
 
 # Autostart X11 on login
-if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebianLaptop" ]]; then
+if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM" == "DebDesktop" || "$MYSYSTEM" == "DebLaptop" ]]; then
   if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
+    eval "$(ssh-agent -s)" > /dev/null
     exec startx
   fi
 fi
