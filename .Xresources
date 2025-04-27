@@ -1,8 +1,3 @@
-! Fonts
-*font:			xft:Hack-Regular:size=12,xft:JetBrainsMono Nerd Font:size=12
-*boldFont:		xft:Hack-Bold:size=12
-*italicFont:		xft:Hack-Italic:size=12
-*bolditalicFont:	xft:Hack-BoldItalic:size=12
 
 !! Colorscheme
 *background: #1D1F21
@@ -55,3 +50,9 @@ URxvt.scrollBar:		false
 URxvt.scrollBar_right:	false
 URxvt.depth:			true
 URxvt.iso14755:		true
+
+! Fonts
+URxvt.font:			xft:Hack-Regular:size=12,xft:JetBrainsMono Nerd Font:size=12
+URxvt.boldFont:		xft:Hack-Bold:size=12
+URxvt.italicFont:		xft:Hack-Italic:size=12
+URxvt.bolditalicFont:	xft:Hack-BoldItalic:size=12
