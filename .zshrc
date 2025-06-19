@@ -143,8 +143,10 @@ if [[ "$MYSYSTEM" == "wslDebianDesktop" || "$MYSYSTEM" == "wslDebianLaptop" ]]; 
     eval "$(ssh-agent -s)" > /dev/null
     # ssh-add ~/.ssh/id_ed25519 2>/dev/null
     # ssh-add ~/.ssh/id_ed25519_euler 2>/dev/null
-    echo "fix wslg"
-    sudo ~/wslg_fix.sh
+    if [[ "$MYSYSTEM" == "wslDebianLaptop" ]]; then
+      echo "fix wslg"
+      sudo ~/wslg_fix.sh
+    fi
   fi
 fi
 
