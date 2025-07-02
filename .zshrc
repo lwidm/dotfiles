@@ -111,6 +111,8 @@ alias llt="eza -alT --icons=always --colour=always"
 alias cisco-start="gtk-launch com.cisco.secureclient.gui"
 alias openTabletDriver-start="/usr/lib/opentabletdriver/OpenTabletDriver.Daemon &"
 alias opentabletdriver-start="/usr/lib/opentabletdriver/OpenTabletDriver.Daemon &"
+alias opentabletGui-start="/usr/lib/opentabletdriver/OpenTabletDriver.UX.Gtk"
+alias opentabletgui-start="/usr/lib/opentabletdriver/OpenTabletDriver.UX.Gtk"
 
 # Conda
 
