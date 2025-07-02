@@ -196,8 +196,12 @@ for_window [class="kitty"] border pixel 0
 # exec_always xrandr --output DP-4.1.8 --mode 2560x1440 --rate 60.00 --left-of DP-4.8
 # exec_always xrandr --output DP-4.1.1.1 --mode 2560x1440 --rate 59.95 --right-of DP-4.8 --rotate right
 
+# Monitor scaling for specific systems
+exec_always bash $HOME/.scripts/monitor-scaling.sh
+
+
 # Cloud storage
-exec --no-startup-id rclone mount --progress --vfs-cache-mode full OneDrive: ~/OneDrive-mount
+# exec --no-startup-id rclone mount --progress --vfs-cache-mode full OneDrive: ~/OneDrive-mount
 
 # ---------- Additional Keybinds ----------
 bindsym $mod+Shift+s exec --no-startup-id flameshot gui
