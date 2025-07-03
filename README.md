@@ -26,6 +26,7 @@ install a nerd font
 rm ~/.zshrc ~/.bashrc
 mkdir -p ~/.local/bin ~/.local/share ~/.local/state ~/.local/include
 mkdir -p ~/.config
+mkdir -p ~/.config/rclone
 ```
 
 ### Main stow command
