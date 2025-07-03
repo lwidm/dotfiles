@@ -4,8 +4,8 @@
 if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebDesktop" ]]; then
 
     # Monitor identifiers
-    MON1="DP-4.1.8"       # First 1440p monitor
-    MON2="DP-4.1.1.1"     # Second 1440p monitor (to be rotated)
+    MON1="DP-2.8"       # First 1440p monitor
+    MON2="DP-0"     # Second 1440p monitor (to be rotated)
     MON4K="DP-4.8"        # 4K monitor
 
     # Calculate positions
