@@ -230,6 +230,8 @@ for_window [title="^Figure.*"] floating enable
 for_window [class="sun-awt-X11-XFramePeer"] floating enable
 for_window [class="gnuplot"] floating enable
 for_window [class="Com.cisco.secureclient.gui"] floating enable
+for_window [class="Anki"] floating enable
+for_window [class="anki"] floating enable
 
 # Catpuccin colour scheme
 include ~/.config/i3/catppuccin-mocha

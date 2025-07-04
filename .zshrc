@@ -125,7 +125,7 @@ fi
 if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM" == "DebDesktop" || "$MYSYSTEM" == "DebLaptop" ]]; then
   if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
     eval "$(ssh-agent -s)" > /dev/null
-    exec startx
+    # exec startx
     # exec --no-startup-id rclone mount --progress --vfs-cache-mode full OneDrive: ~/OneDrive-mount
   fi
 fi
