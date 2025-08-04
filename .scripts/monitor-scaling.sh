@@ -12,7 +12,7 @@ if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebDesktop" ]]; then
     # Calculate positions
     POS1="0x560"         # First monitor position
     POS2="5248x0"        # Second monitor position
-    POS4K="2560x200"     # 4K monitor position (corrected to use 'x' instead of '+')
+    POS4K="2560x200"     # 4K monitor position
 
     # Apply scaling configuration
     # xrandr --output $MON4K --mode 3840x2160 --scale 1.5x1.5 --pos $POS4K --panning 3840x2160+2560+200 --primary
