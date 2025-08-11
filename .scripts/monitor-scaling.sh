@@ -1,33 +1,39 @@
 #!/bin/bash
+
 # NVIDIA Multi-Monitor Scaling Script
-# Save as ~/bin/monitor-scaling.sh
+#
 if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebDesktop" ]]; then
 
     # Monitor identifiers
-    MON1="DP-4.8"       # First 1440p monitor
-    MON2="DP-2"     # Second 1440p monitor (to be rotated)
-    # MON4K="DP-4.8"        # 4K monitor
-    MON4K="DP-0.8"        # 4K monitor
+    MON1="DP-0.8"       # First 1440p monitor
+    MON2="DP-2"         # Second 1440p monitor (to be rotated)
+    MON4K="DP-4.2"      # 4K monitor
+    PIKVM="DP-4.3"      # PiKVM display (1080p)
 
     # Calculate positions
     POS1="0x560"         # First monitor position
-    POS2="5248x0"        # Second monitor position
-    POS4K="2560x200"     # 4K monitor position
-
-    # Apply scaling configuration
-    # xrandr --output $MON4K --mode 3840x2160 --scale 1.5x1.5 --pos $POS4K --panning 3840x2160+2560+200 --primary
-    xrandr --output $MON4K --mode 3840x2160 --scale 0.7x0.7 --pos $POS4K  --primary
-    xrandr --output $MON1 --mode 2560x1440 --pos $POS1
-    xrandr --output $MON2 --mode 2560x1440 --rotate right --pos $POS2
+    NVIDIA_POS1="+0+560"
+    POS4K="2560x560"     # 4K monitor position
+    NVIDIA_POS4K="+2560+560"
+    POS2="5120x0"        # Second monitor position
+    NVIDIA_POS2="+5120+0"
+    SCALING4K=0.666666666666666
 
     # Enable NVIDIA composition pipeline
-    # nvidia-settings --assign CurrentMetaMode="\
-    # $MON1: 2560x1440_60 +0+560 {ForceFullCompositionPipeline=On}, \
-    # $MON2: 2560x1440_60 +6400+0 {ForceFullCompositionPipeline=On, Rotation=90}, \
-    # $MON4K: 3840x2160_60 +2560+200 { \
-    #     ViewPortIn=3840x2160, \
-    #     ViewPortOut=2560x1440+0+0, \
-    #     ForceFullCompositionPipeline=On}"
+    nvidia-settings --assign CurrentMetaMode="\
+        DP-0.8: 2560x1440 $NVIDIA_POS1 {ForceFullCompositionPipeline=On}, \
+        DP-2:   2560x1440 $NVIDIA_POS2 {ForceFullCompositionPipeline=On,Rotation=270}, \
+        DP-4.2: 3840x2160 $NVIDIA_POS4K {ForceFullCompositionPipeline=On}"
+
+    # Apply scaling configuration
+    xrandr --fb 6560x2560
+    xrandr --output $MON4K --mode 3840x2160 --scale ${SCALING4K}x${SCALING4K} --pos $POS4K
+    xrandr --output $MON1 --mode 2560x1440 --auto --pos $POS1
+    xrandr --output $MON2 --mode 2560x1440 --rotate right --pos $POS2
+
+    # Mirror 4K display to PiKVM (1080p)
+    xrandr --output $PIKVM --mode 1920x1080 --scale-from 2560x1440 --same-as $MON4K
+
 
     # Set global DPI
     xrandr --dpi 96
