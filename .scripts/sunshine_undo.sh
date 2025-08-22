@@ -1,20 +1,50 @@
 #!/usr/bin/env bash
+#~/.scripts/sunshine_undo.sh
+set -euo pipefail
 
-# Virtual display cleanup
-VIRTUAL_PORT="HDMI-0"
-VIRTUAL_MODE="2880x1800_60.00"
+BACKUP_DIR="${HOME}/.cache/sunshine"
+SUN_CONF="/etc/sunshine/sunshine.conf"
+timestamp=$(ls -1t ${BACKUP_DIR}/monitors-*.txt 2>/dev/null | head -n1 || true)
 
-# Disable virtual display
-xrandr --output $VIRTUAL_PORT --off
-xrandr --delmode $VIRTUAL_PORT "$VIRTUAL_MODE"
-xrandr --rmmode "$VIRTUAL_MODE"
+if [ -z "$timestamp" ]; then
+  echo "No backup found in ${BACKUP_DIR} — manual restore may be required."
+else
+  echo "Restoring xrandr state from $timestamp (best-effort)..."
+  # We can't perfectly restore arbitrary xrandr states, but we will attempt to bring back outputs mentioned
+  grep -Eo '([A-Za-z0-9-]+) connected' "$timestamp" | awk '{print $1}' | while read -r out; do
+    echo "Attempting to re-enable $out (mode autodetect)"
+    xrandr --output "$out" --auto || true
+  done
+fi
 
-# Restore physical monitors using your existing script
-/home/lukas/.scripts/monitor-scaling.sh
+# remove the virtual mode we added previously -- attempt to find a common mode name
+VIRTUAL_MODE_CANDIDATES=$(ls ${BACKUP_DIR}/xrandr-full-*.txt 2>/dev/null | head -n1 || true)
+# Best-effort: remove common mode names if they exist
+for m in "2880x1800_60.00" "2560x1440_60.00" "2560x1440_59.95" "1920x1080_60.00"; do
+  echo "Attempting to remove mode $m from all outputs"
+  for out in $(xrandr | awk '/ connected| disconnected/ {print $1}'); do
+    xrandr --output "$out" --off || true
+    xrandr --delmode "$out" "$m" 2>/dev/null || true
+  done
+done
 
-# Reset Sunshine to physical display capture
-sunshine stop
-sed -i 's/^\(capture\s*=\s*\).*$/\1auto/' /etc/sunshine/sunshine.conf
-sunshine start
+# restore sunshine.conf backup if it exists
+if [ -f "${SUN_CONF}.bak"* ]; then
+  latest_backup=$(ls -t ${SUN_CONF}.bak.* 2>/dev/null | head -n1 || true)
+  if [ -n "$latest_backup" ]; then
+    echo "Restoring sunshine.conf from $latest_backup (using sudo)"
+    sudo cp "$latest_backup" "$SUN_CONF"
+  fi
+fi
 
-echo "Original monitor configuration restored"
+# restart sunshine service
+if systemctl --user status sunshine >/dev/null 2>&1; then
+  systemctl --user restart sunshine || true
+  sleep 1
+  systemctl --user status sunshine --no-pager || true
+else
+  echo "systemd user service 'sunshine' not found; start manually if needed."
+fi
+
+echo "Restore script finished (best-effort)."
+
