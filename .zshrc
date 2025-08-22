@@ -122,7 +122,7 @@ if [ -f ~/.MYSYSTEM ]; then
 fi
 
 # Autostart X11 on login
-if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM" == "DebDesktop" || "$MYSYSTEM" == "DebLaptop" ]]; then
+if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM" == "DebDesktop" || "$MYSYSTEM" == "DebLaptop" || "$MYSYSTEM" == "ArchDesktop" || "$MYSYSTEM" == "ArchLaptop" ]]; then
   if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
     eval "$(ssh-agent -s)" > /dev/null
     # exec startx
@@ -137,6 +137,11 @@ if [[ "$MYSYSTEM" == "ArchDesktop" ]]; then
   export GDK_DPI_SCALE=0.5
   export QT_AUTO_SCREEN_SCALE_FACTOR=1
   export QT_SCALE_FACTOR=2
+fi
+if [[ $"MYSYSTEM" == "ArchLaptop" ]]; then
+  if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
+    hyprland &
+  fi
 fi
 if [[ "$MYSYSTEM" == "wslDebianDesktop" || "$MYSYSTEM" == "wslDebianLaptop" ]]; then
   export PATH="$PATH:/usr/nvim-linux-x86_64/bin"
