@@ -121,28 +121,50 @@ if [ -f ~/.MYSYSTEM ]; then
   source ~/.MYSYSTEM
 fi
 
-# Autostart X11 on login
+# Autostart ssh-agent
 if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM" == "DebDesktop" || "$MYSYSTEM" == "DebLaptop" || "$MYSYSTEM" == "ArchDesktop" || "$MYSYSTEM" == "ArchLaptop" ]]; then
   if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
     eval "$(ssh-agent -s)" > /dev/null
-    # exec startx
-    # exec --no-startup-id rclone mount --progress --vfs-cache-mode full OneDrive: ~/OneDrive-mount
   fi
 fi
-if [[ "$MYSYSTEM" == "ArchDesktop" ]]; then
+
+
+if [[ "$MYSYSTEM" == "DebianDesktop" ]]; then
+  # export LIBVA_DRIVER_NAME=nvidia
+  # export GBM_BACKEND=nvidia-drm
+  # export __GLX_VENDOR_LIBRARY_NAME=nvidia
+  # export WLR_NO_HARDWARE_CURSORS=1
+  #
+  # export GTK_SCALE=2
+  # export GDK_DPI_SCALE=0.5
+  # export QT_AUTO_SCREEN_SCALE_FACTOR=1
+  # export QT_SCALE_FACTOR=2
   if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
     hyprland &
   fi
+fi
+
+if [[ "$MYSYSTEM" == "ArchDesktop" ]]; then
+  export LIBVA_DRIVER_NAME=nvidia
+  export GBM_BACKEND=nvidia-drm
+  export __GLX_VENDOR_LIBRARY_NAME=nvidia
+  export WLR_NO_HARDWARE_CURSORS=1
+
   export GTK_SCALE=2
   export GDK_DPI_SCALE=0.5
   export QT_AUTO_SCREEN_SCALE_FACTOR=1
   export QT_SCALE_FACTOR=2
+  if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
+    hyprland &
+  fi
 fi
+
 if [[ $"MYSYSTEM" == "ArchLaptop" ]]; then
   if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
     hyprland &
   fi
 fi
+
 if [[ "$MYSYSTEM" == "wslDebianDesktop" || "$MYSYSTEM" == "wslDebianLaptop" ]]; then
   export PATH="$PATH:/usr/nvim-linux-x86_64/bin"
   # Start SSH Agent and add key
