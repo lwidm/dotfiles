@@ -2,4 +2,5 @@
 
 if [[ "$MYSYSTEM" == "DebLaptop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM" == "ArchLaptop" ]]; then
 	hyprctl keyword input:kb_options caps:swapescape
+	hyprctl keyword input:touchpad:scroll_factor 0.5
 fi
