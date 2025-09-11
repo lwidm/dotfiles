@@ -84,8 +84,19 @@ tooltip label {
   font-size: 14px
 }
 
-.icon {
-  font-size: 20px;
+.battery_module .icon {
+  font-size: 18px;
+}
+
+.memory_module .icon {
+  font-size: 22px;
+}
+
+.battery_percent {
+  font-family: "Share Tech Mono";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 14px;
 }
 
 @mixin bat_mem_styles($color, $margin-right, $margin-left) {
@@ -113,17 +124,26 @@ tooltip label {
 }
 
 .clock_module {
-  font-family: "Share Tech Mono", "ShareTechMono", monospace;
+  font-family: "Share Tech Mono";
   font-weight: normal;
   font-style: normal;
 }
 
+.clock_module label {
+  font-family: "Share Tech Mono";
+  font-weight: normal;
+}
+
 .time-stack {
+  font-family: "Share Tech Mono";
+  font-weight: normal;
   color: $white;
   margin: 0 4px 0 2px;
 }
 
 .clock_time_seconds {
+  font-family: "Share Tech Mono";
+  font-weight: normal;
   font-size: 12px;
   margin-top: 2px;
 }
