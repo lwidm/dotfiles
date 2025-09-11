@@ -8,6 +8,8 @@ $background: rgba(00, 00, 00, 0.3);
 $widget-background: rgba(30, 30, 30, 0.4);
 $shadow: rgba(00, 00, 00, 0.4);
 $grey: #606060;
+$gap: 4px;
+$gap_top: 2px;
 
 $black: #3d4c5f;
 $red: #ee4f84;
@@ -18,7 +20,7 @@ $purple: #985eff;
 $teal: #24d1e7;
 $white: #e5e5e5;
 
-$border-radius: 16px;
+$border-radius: 10px;
 
 /** --------- General ---------- **/
 
@@ -32,6 +34,7 @@ $border-radius: 16px;
   border-style: solid;
   border-width: 2;
   border-color: $green;
+  margin: $gap_top $gap $gap $gap;
 }
 
 .module {
@@ -74,11 +77,22 @@ tooltip label {
   margin: 0px 8px 0px 8px;
 }
 
+.progress_circle {
+}
+
+.progress_icon {
+  font-size: 14px
+}
+
+.icon {
+  font-size: 20px;
+}
+
 @mixin bat_mem_styles($color, $margin-right, $margin-left) {
   background-color: rgba(00, 00, 00, 0);
   margin: 0px $margin-right 0px $margin-left;
 
-  circular-progress {
+  .progress_circle {
     color: $color;
     background-color: $grey;
   }
@@ -98,19 +112,24 @@ tooltip label {
   @include bat_mem_styles($orange, 10px, 3px);
 }
 
-clock_module {
-  font-weight: 300;
-  font-family: "Share Tech Mono";
-  font-size: 8;
+.clock_module {
+  font-family: "Share Tech Mono", "ShareTechMono", monospace;
+  font-weight: normal;
+  font-style: normal;
 }
 
 .time-stack {
   color: $white;
-  margin: 0px 20px 0px 5px;
+  margin: 0 4px 0 2px;
+}
+
+.clock_time_seconds {
+  font-size: 12px;
+  margin-top: 2px;
 }
 
 .date-stack {
-  margin: 0px 20px 0px -1px;
+  margin: 0px 20px 0px 5px;
   color: $white;
 }
 
