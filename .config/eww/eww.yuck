@@ -6,11 +6,13 @@
 
 ;; (defpoll clock_time :interval "5s" `date "+\%k \%M"`)
 ;; (defpoll clock_time :interval "5s" `date '+\%l \%M' \%p`)
-(defpoll clock_time :interval "5s" `date "+%H:%M"`)
+(defpoll clock_json :interval "5s" `date '+{"H":"%H","M":"%M"}'`)
 (defpoll clock_date :interval "10h" `date "+\%d \%m \%Y"`)
 (defpoll date_json :interval "10h" `date '+{"d":"%d", "m":"%m", "b":"%b", "Y":"%Y"}'`)
-(defpoll month_num_dot :interval "10h" `date '+.%m.'`)   ;; ".09."
-(defpoll month_short_comma :interval "10h" `date '+ %b, '`) ;; "Sep,"
+;; (defpoll month_num_dot :interval "10h" `date '+.%m.'`)   ;; ".09."
+;; (defpoll month_short_comma :interval "10h" `date '+ %b, '`) ;; "Sep,"
+(defpoll month_num_dot :interval "10h" `date '+.%m'`)   ;; ".09."
+(defpoll month_short_comma :interval "10h" `date '+ %b'`) ;; "Sep,"
 ;; (defpoll system_memory_poll :interval "5s" `${BIN_DIR}/format_number $( ${EWW_CMD.available_mem} / 1024 / 1024 ) 0 `)
 ;; (defpoll system_memory_poll :interval "5s" `echo ${EWW_CMD} get available_mem` )
 ;; (defpoll system_memory_poll :interval "5s" (concat `scripts/bin/format_number $( `, EWW_CMD.available_mem )` / 1024 / 1024 ) 0 `)
@@ -71,7 +73,7 @@
               :wrap false
               ""))))
 
-(defpoll month_display :interval "10h" `date '+.%m.'`)   ;; ".09."
+(defpoll month_display :interval "10h" `date '+.%m'`)   ;; ".09."
 (defwidget clock_module []
   (eventbox
     :onhover "${EWW_CMD} update month_display='${month_short_comma}'"
@@ -88,13 +90,18 @@
         fi
       "
       (box :class "module" :space-evenly false :orientation "h" :spacing 0
-        (label :class "clock_time_class" :text clock_time)
+        ;; left: stacked time (hours over minutes)
+        (box :orientation "v" :spacing 0 :class "time-stack"
+          (label :class "clock_time_hours"   :text "${clock_json.H}")
+          (label :class "clock_time_minutes" :text "${clock_json.M}")) 
 
-        ;; single label for whole date — no extra spacing artifacts
-        (label :class "date-text"
-               :text "${date_json.d}${month_display}${date_json.Y}")))))
+        ;; right: stacked date (day over month over year)
+        (box :orientation "v" :spacing 0 :class "date-stack"
+          (label :class "date-day-month" :text "${date_json.d}${month_display}")
+          (label :class "date-year"  :text "${date_json.Y}"))))))
+        ;; :text "${date_json.d}${month_display}${date_json.Y}")))))
 
-;; ---------- top bar structure ----------
+;; ---------- bottom bar structure ----------
 ;; define widget groups
 (defwidget left []
   (box  :orientation "h" 

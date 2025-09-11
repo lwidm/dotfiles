@@ -1,6 +1,7 @@
 * {
   all: unset;
-  font-family: "Inter Nerd Font";
+  font-family: "Inter", "Hack Nerd Font", "Hack", "Share Tech Mono";
+  /* font-family: "Inter Nerd Font", "Roboto", "Noto Sans"; */
 }
 
 $background: rgba(00, 00, 00, 0.3);
@@ -20,6 +21,7 @@ $white: #e5e5e5;
 $border-radius: 16px;
 
 /** --------- General ---------- **/
+
 .phosphor_icon {
   font-family: "Phosphor";
 }
@@ -34,13 +36,12 @@ $border-radius: 16px;
 
 .module {
   margin: 0px 0px 0px 0px;
-  border-radius: 10px 10px 0px 10px;
-}
-
-.module {
+  border-radius: 0px 0px 0px 0px;
 }
 
 .left_modules {
+  margin: 0px 0px 0px 0px;
+  border-radius: 0px 0px 0px 0px;
 }
 
 .center_modules {
@@ -49,6 +50,8 @@ $border-radius: 16px;
 }
 
 .right_modules {
+  margin: 0px 0px 0px 0px;
+  border-radius: 0px 0px 0px 0px;
 }
 
 /** --------- tooltip --------- **/
@@ -95,17 +98,20 @@ tooltip label {
   @include bat_mem_styles($orange, 10px, 3px);
 }
 
-.clock_time_class {
+clock_module {
+  font-weight: 300;
+  font-family: "Share Tech Mono";
+  font-size: 8;
+}
+
+.time-stack {
   color: $white;
-  font-size: 28px;
-  font-weight: bold;
   margin: 0px 20px 0px 5px;
 }
 
-.clock_date_class {
-  font-size: 24px;
+.date-stack {
   margin: 0px 20px 0px -1px;
-  color: $red;
+  color: $white;
 }
 
 /** --------- calendar -------- **/
