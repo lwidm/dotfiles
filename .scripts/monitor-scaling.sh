@@ -21,19 +21,22 @@ if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebDesktop" ]]; then
     NVIDIA_POSPIKVM="+6560+740"
     SCALING4K=0.666666666666666
 
+    xrandr --fb 8480x2720
+
     # Enable NVIDIA composition pipeline
     nvidia-settings --assign CurrentMetaMode="\
         $MON1:  2560x1440_60 $NVIDIA_POS1  {ForceFullCompositionPipeline=On}, \
         $MON2:  2560x1440_60 $NVIDIA_POS2  {ForceFullCompositionPipeline=On,Rotation=270}, \
-        $MON4K: 3840x2160_60 $NVIDIA_POS4K {ForceFullCompositionPipeline=On} \
+        $MON4K: 3840x2160_60 $NVIDIA_POS4K {ForceFullCompositionPipeline=On}, \
         $PIKVM: 1920x1080_30 $NVIDIA_POSPIKVM {ForceFullCompositionPipeline=On}"
 
     # Apply scaling configuration
-    xrandr --fb 6560x2560
-    xrandr --output $MON4K --mode 3840x2160 --rate 60 --scale ${SCALING4K}x${SCALING4K} --pos $POS4K
+    xrandr --fb 8480x2720
+    xrandr --output $MON4K --mode 3840x2160 --rate 60 \
+           --scale ${SCALING4K}x${SCALING4K} --pos $POS4K
     xrandr --output $MON1 --mode 2560x1440 --rate 60 --auto --pos $POS1
     xrandr --output $MON2 --mode 2560x1440 --rate 60 --rotate right --pos $POS2
-    xrandr --output $MONPIKVM --mode 1920x1080 --rate 30--pos $POSPIKVM
+    xrandr --output $PIKVM --mode 1920x1080 --rate 30 --pos $POSPIKVM
 
     # Mirror 4K display to PiKVM (1080p)
     # xrandr --output $PIKVM --mode 1920x1080 --scale-from 2560x1440 --same-as $MON4K
