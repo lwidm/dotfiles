@@ -1,12 +1,15 @@
 * {
   all: unset;
-  font-family: "Inter Nerd Font";
+  font-family: "Inter", "Hack Nerd Font", "Hack", "Share Tech Mono";
+  /* font-family: "Inter Nerd Font", "Roboto", "Noto Sans"; */
 }
 
 $background: rgba(00, 00, 00, 0.3);
 $widget-background: rgba(30, 30, 30, 0.4);
 $shadow: rgba(00, 00, 00, 0.4);
 $grey: #606060;
+$gap: 4px;
+$gap_top: 2px;
 
 $black: #3d4c5f;
 $red: #ee4f84;
@@ -17,9 +20,10 @@ $purple: #985eff;
 $teal: #24d1e7;
 $white: #e5e5e5;
 
-$border-radius: 16px;
+$border-radius: 10px;
 
 /** --------- General ---------- **/
+
 .phosphor_icon {
   font-family: "Phosphor";
 }
@@ -30,17 +34,17 @@ $border-radius: 16px;
   border-style: solid;
   border-width: 2;
   border-color: $green;
+  margin: $gap_top $gap $gap $gap;
 }
 
 .module {
   margin: 0px 0px 0px 0px;
-  border-radius: 10px 10px 0px 10px;
-}
-
-.module {
+  border-radius: 0px 0px 0px 0px;
 }
 
 .left_modules {
+  margin: 0px 0px 0px 0px;
+  border-radius: 0px 0px 0px 0px;
 }
 
 .center_modules {
@@ -49,6 +53,8 @@ $border-radius: 16px;
 }
 
 .right_modules {
+  margin: 0px 0px 0px 0px;
+  border-radius: 0px 0px 0px 0px;
 }
 
 /** --------- tooltip --------- **/
@@ -71,11 +77,33 @@ tooltip label {
   margin: 0px 8px 0px 8px;
 }
 
+.progress_circle {
+}
+
+.progress_icon {
+  font-size: 14px
+}
+
+.battery_module .icon {
+  font-size: 18px;
+}
+
+.memory_module .icon {
+  font-size: 22px;
+}
+
+.battery_percent {
+  font-family: "Share Tech Mono";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 14px;
+}
+
 @mixin bat_mem_styles($color, $margin-right, $margin-left) {
   background-color: rgba(00, 00, 00, 0);
   margin: 0px $margin-right 0px $margin-left;
 
-  circular-progress {
+  .progress_circle {
     color: $color;
     background-color: $grey;
   }
@@ -95,18 +123,80 @@ tooltip label {
   @include bat_mem_styles($orange, 10px, 3px);
 }
 
-.clock_time_class {
-  color: $white;
-  font-size: 28px;
-  font-weight: bold;
-  margin: 0px 20px 0px 5px;
+.clock_module {
+  font-family: "Share Tech Mono";
+  font-weight: normal;
+  font-style: normal;
 }
 
-.clock_date_class {
-  font-size: 24px;
-  margin: 0px 20px 0px -1px;
+.clock_module label {
+  font-family: "Share Tech Mono";
+  font-weight: normal;
+}
+
+.time-stack {
+  font-family: "Share Tech Mono";
+  font-weight: normal;
+  color: $white;
+  margin: 0 4px 0 2px;
+}
+
+.clock_time_seconds {
+  font-family: "Share Tech Mono";
+  font-weight: normal;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.date-stack {
+  margin: 0px 20px 0px 5px;
+  color: $white;
+}
+
+/** --------- Powermenu -------- **/
+.powermenu {
+  font-family: feather;
+  font-size: 1.4em;
+  font-weight: bold;
+}
+.button-hyprrestart, .button-reb, .button-lock,
+.button-quit, .button-off{
+  padding: .5rem 1rem .3rem .2rem;
+}
+.button-off{
+  font-size: 1.3em;
+  margin-bottom: .2rem;
+  padding-right: .2rem;
   color: $red;
 }
+.button-hyprrestart{
+  color: $green;
+}
+.button-reb{
+  color: $orange
+}
+.button-quit{
+  color: $teal;
+}
+.button-lock{
+  color: $blue;
+}
+
+/* smooth color change on hover for powermenu buttons */
+.powermenu .button-hyprrestart,
+.powermenu .button-reb,
+.powermenu .button-lock,
+.powermenu .button-quit,
+.powermenu .button-off {
+  transition: color 140ms ease;
+}
+
+/* darker text on hover (adjust percentage if you want stronger/weaker) */
+.powermenu .button-hyprrestart:hover { color: darken($green, 12%); }
+.powermenu .button-reb:hover        { color: darken($orange, 12%); }
+.powermenu .button-lock:hover       { color: darken($blue, 12%); }
+.powermenu .button-quit:hover       { color: darken($teal, 12%); }
+.powermenu .button-off:hover        { color: darken($red, 12%); }
 
 /** --------- calendar -------- **/
 .calendar {
@@ -178,4 +268,39 @@ calendar {
   font-size: 16;
   color: #bbc5d7;
   margin: 5px 0px 0px 25px;
+}
+
+
+/** --------- eww restart ---------- **/
+.button-eww-restart {
+  font-size: 16px;
+  padding: 6px 8px;
+  margin-right: 8px;
+  color: $white;
+  background-color: transparent;
+  border-radius: 6px;
+}
+
+.button-eww-restart .eww-restart-stack {
+}
+
+.button-eww-restart .eww-restart-stack label,
+.button-eww-restart .eww-restart-top,
+.button-eww-restart .eww-restart-bottom {
+  margin: 0;
+  padding: 0;
+}
+
+.button-eww-restart:hover {
+  color: $red;
+}
+.button-eww-restart .eww-restart-top {
+  font-size: 10px;
+  font-family: "Share Tech Mono";
+  margin-bottom: 0px;
+}
+
+.button-eww-restart .eww-restart-bottom {
+  font-size: 12px;
+  margin-top: 0px;
 }

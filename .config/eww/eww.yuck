@@ -1,16 +1,30 @@
 ;; --------- variables and polls ---------
 (defvar BIN_DIR "./scripts/bin")
 (defvar time_rev false)
+(defvar not_time_rev true)
 (defvar is_calendar_open false)
+(defvar show_seconds false)
+(defvar gap "0.5%")
+(defvar double_gap "1%")
+(defvar bar_width "99%")
 
-(defpoll clock_time :interval "5s" `date "+\%k \%M"`)
+;; (defpoll clock_time :interval "5s" `date "+\%k \%M"`)
 ;; (defpoll clock_time :interval "5s" `date '+\%l \%M' \%p`)
-(defpoll clock_date :interval "10h" `date "+\%d \%m \%Y"`)
-(defpoll date_json :interval "10h" `date '+{"d":"\%d", "m":"\%m", "Y":"\%Y"}'`)
+(defpoll clock_json :interval "5s" `date '+{"H":"%H","M":"%M"}'`)
+(defpoll date_json :interval "10h" `date '+{"d":"%d", "m":"%m", "b":"%b", "Y":"%Y"}'`)
+(defpoll clock_seconds :interval "1s" :run-while show_seconds `date +%S`)
+;; (defpoll month_num_dot :interval "10h" `date '+.%m.'`)   ;; ".09."
+;; (defpoll month_short_comma :interval "10h" `date '+ %b, '`) ;; "Sep,"
+(defpoll month_num_dot :interval "10h" `date '+.%m'`)   ;; ".09."
+(defpoll month_short_comma :interval "10h" `date '+ %b'`) ;; "Sep,"
+(defpoll month_display :interval "10h" `date '+.%m'`)   ;; ".09."
 ;; (defpoll system_memory_poll :interval "5s" `${BIN_DIR}/format_number $( ${EWW_CMD.available_mem} / 1024 / 1024 ) 0 `)
-(defpoll system_memory_poll :interval "5s" `echo ${EWW_CMD} get available_mem` )
+;; (defpoll system_memory_poll :interval "5s" `echo ${EWW_CMD} get available_mem` )
 ;; (defpoll system_memory_poll :interval "5s" (concat `scripts/bin/format_number $( `, EWW_CMD.available_mem )` / 1024 / 1024 ) 0 `)
 
+(defpoll battery_json :interval "30s" `~/.config/eww/scripts/battery_info.sh json`)
+;; (defpoll battery_percent :interval "30s" `~/.config/eww/scripts/battery_info.sh percent`)
+;; (defpoll battery_icon :interval "30s" `~/.config/eww/scripts/battery_info.sh icon`)
 
 
 
@@ -44,62 +58,117 @@
   (box  :class "battery_module"
         :vexpand "false"
         :hexpand "false"
-    (circular-progress  :value {EWW_BATTERY["BAT0"].capacity}
-                        :thickness 4
-      (button :class "progress_icon"
-              :limit-width 2
-              :tooltop "battery on ${EWW_BATTERY["BAT0"].capacity}%"
-              :show_truncated false
-              :wrap false
-              ""))))
+    (label :class "battery_percent" :text "${battery_json.percent}%")
+    (label :class "icon" :text "${battery_json.icon}")
+    (box :orientation "h" :halign "center" :valign "center" :height 10
+      (circular-progress  :class "progress_circle"
+                          :value {EWW_BATTERY["BAT0"].capacity}
+                          :thickness 4
+        (button :class "progress_icon"
+                :limit-width 2
+                :tooltip "battery: ${EWW_BATTERY["BAT0"].capacity}%"
+                :show_truncated false
+                :wrap false
+                "")))))
 
 (defwidget memory_module []
   (box  :class "memory_module"
         :vexpand "false"
         :hexpand "false" 
-    (circular-progress  :value {EWW_RAM.used_mem_perc}
-                        :thickness 4
-      (button :class "progress_icon"
-              :limit-width 2
-              :tooltip "using ${EWW_RAM.used_mem_perc}% ram"
-              :onclick "${EWW_CMD} open --toggle system"
-              :show_truncated false
-              :wrap false
-              ""))))
+    (label :class "icon" :text "󰍛")
+    (box :orientation "h" :halign "center" :valign "center" :height 10
+      (circular-progress  :class "progress_circle"
+                          :value {EWW_RAM.used_mem_perc}
+                          :thickness 4
+                          :width: 20
+        (button :class "progress_icon"
+                :limit-width 2
+                :tooltip "using ${EWW_RAM.used_mem_perc}% ram"
+                :onclick "${EWW_CMD} open --toggle system"
+                :show_truncated false
+                :wrap false
+                "")))))
 
+;; adjust paths if you put scripts elsewhere
+(defvar seconds_start_script "$~/.config/eww/scripts/eww_seconds_start.sh")
+(defvar seconds_stop_script  "$~/.config/eww/scripts/eww_seconds_stop.sh")
 (defwidget clock_module []
-  (eventbox :onhover "${EWW_CMD} update time_rev=true"
-            :onhoverlost "${EWW_CMD} update time_rev=false"
-    (box  :class "module"
-          :space-evenly "false"
-          :orientation "h"
-          :spacing "0"
-      (label  :class "clock_time_class"
-              :text clock_time)
-      (revealer :transition "slideleft"
-                :reveal time_rev
-                :duration "350ms"
-        (button :class "clock_date_class"
-                :onclick  "
-                          if [ \$( ${EWW_CMD} get is_calendar_open ) = 'false' ]; then
-                            ${EWW_CMD} open calendar &&
-                            ${EWW_CMD} update is_calendar_open=true
-                          else
-                            ${EWW_CMD} close calendar &&
-                            ${EWW_CMD} update is_calendar_open=false &&
-                            ${EWW_CMD} update time_rev=false
-                          fi
-                          "
-                "${date_json.d} ${date_json.m} ${date_json.Y}")))))
+  (eventbox
+    :class "clock_module"
+    :onhover     "${EWW_CMD} update month_display='${month_short_comma}' show_seconds=true"
+    :onhoverlost "${EWW_CMD} update month_display='${month_num_dot}' show_seconds=false"
+    (button
+      :class "clock_date_class"
+      :onclick "
+        if [ \"$( ${EWW_CMD} get is_calendar_open )\" = \"true\" ]; then
+          ${EWW_CMD} close calendar &&
+          ${EWW_CMD} update is_calendar_open=false month_display='${month_num_dot}'
+        else
+          ${EWW_CMD} open calendar &&
+          ${EWW_CMD} update is_calendar_open=true
+        fi
+      "
+      (box :class "module" :space-evenly false :orientation "h" :spacing 0
 
-;; ---------- top bar structure ----------
+        ;; left: stacked time (hours over minutes, seconds revealed)
+        (box :orientation "v" :spacing 0 :class "time-stack"
+          (label :class "clock_time_hours"   :text "${clock_json.H}")
+          (label :class "clock_time_minutes" :text "${clock_json.M}"))
+        ;; reveal seconds only while show_seconds == true
+        (revealer :transition "slideright"
+                    :reveal show_seconds
+                    :duration "160ms"
+          (label :class "clock_time_seconds" :text "${clock_seconds}"))
+
+        ;; right: stacked date (day + month on top line, year below)
+        (box :orientation "v" :spacing 0 :class "date-stack"
+          (label :class "date-day-month" :text "${date_json.d}${month_display}")
+          (label :class "date-year"      :text "${date_json.Y}"))))))
+        ;; :text "${date_json.d}${month_display}${date_json.Y}")))))
+
+(defvar show_powermenu false)
+(defwidget powermenu_module []
+  (eventbox :onhover "${EWW_CMD} update show_powermenu=true; date +%s > /tmp/eww_powermenu_shown"
+            :onhoverlost "${EWW_CMD} update show_powermenu=false; rm -f /tmp/eww_powermenu_shown"
+    (box  :orientation "h"
+          :space-evenly "false"
+          :hexpand "false"
+          :class "powermenu"
+      (revealer :transition "slideleft"
+                :reveal show_powermenu
+                :duration "500ms"
+        (box  :orientation "h"
+              :space-evenly "false"
+          (button :class "button-hyprrestart"
+                  :tooltip "Restart Hyprland" 
+                  :onclick "hyprctl reload" "")  ; Reload Hyprland config
+          (button :class "button-quit"
+                  :tooltip "Exit Hyprland"
+                  :onclick "hyprctl dispatch exit" "󰍃")  ; Exit Hyprland gracefully
+          (button :class "button-lock"
+                  :tooltip "Lock Screen"
+                  :onclick "sh ~/.config/eww/scripts/lock.sh" "")
+          (button :class "button-reb"
+                  :tooltip "Reboot"
+                  :onclick "systemctl reboot" "")))  ; Systemd reboot
+      (button :class "button-off"
+              :tooltip "Shutdown"
+              :onclick "sh ~/.config/eww/scripts/powerbutton.sh" "󰐥"))))
+
+;; ---------- bottom bar structure ----------
 ;; define widget groups
 (defwidget left []
-  (box  :orientation "h" 
-        :space-evenly false  
-        :halign "start"
-        :class "left_modules"
-    (dummy)))
+  (box :orientation "h"
+       :space-evenly false
+       :halign "start"
+       :class "left_modules"
+  (button :class "button-eww-restart"
+          :tooltip "Restart Eww"
+          :onclick "sh ~/.config/eww/scripts/restart_eww.sh"
+    (box :orientation "v" :halign "center" :spacing 0 :class "eww-restart-stack"
+      (label :class "eww-restart-top"    :text "eww")
+      (label :class "eww-restart-bottom" :text "⟲")))
+  (dummy)))
 
 (defwidget center []
   (box  :orientation "h" 
@@ -116,6 +185,8 @@
   (battery_module)
   (memory_module)
   (sep)
+  (powermenu_module)
+  (sep)
   (clock_module)))
 
 ;; bar
@@ -127,14 +198,14 @@
     (right)))
 
 (defwindow bar0
-  :exclusive false
+  :exclusive true
   :monitor 0
   :geometry (geometry 
-    :x "15px"
-    :y "9px"
-    :width "98%"
+    :x "0px"
+    :y "0px"
+    :width "100%"
     :height "30px"
-    :anchor "top center")
+    :anchor "bottom center")
   :stacking "fg"
   :windowtype "dock"
   (bar_layout))
@@ -156,9 +227,9 @@
   :screen 1
   :monitor 0
   :geometry (geometry
-    :x "20px"
-    :y "7%"
-    :anchor "top right"
+    :x "0.5%"
+    :y "1%"
+    :anchor "bottom right"
     :width "270px"
     :height "60px")
   (calendar_module))
@@ -196,8 +267,8 @@
                     :show_truncated false
                     :wrap false)
             (label  :class "system_memory_subtext"
-                    ;; :text "${round((EWW_RAM.available_mem / 1024 / 1024),0)} | ${round((EWW_RAM.total_mem / 1024 / 1024),0)} mb"
-                    :text system_memory_poll
+                    :text "${round((EWW_RAM.available_mem / 1024 / 1024),0)} | ${round((EWW_RAM.total_mem / 1024 / 1024),0)} mb"
+                    ;; :text system_memory_poll
                     :halign "start")))))
 
 
