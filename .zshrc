@@ -159,7 +159,7 @@ if [[ "$MYSYSTEM" == "ArchDesktop" ]]; then
   fi
 fi
 
-if [[ $"MYSYSTEM" == "ArchLaptop" ]]; then
+if [[ "$MYSYSTEM" == "ArchLaptop" ]]; then
   if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
     hyprland &
   fi

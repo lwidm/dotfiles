@@ -15,6 +15,8 @@ This directory contains the dotfiles for my system
 - oh-my-zsh
 - polybar
 - hyprpaper
+- hyprlock
+- hypridle
 
 ### fonts
 

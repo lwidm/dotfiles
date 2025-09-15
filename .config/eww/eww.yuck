@@ -66,7 +66,7 @@
                           :thickness 4
         (button :class "progress_icon"
                 :limit-width 2
-                :tooltip "battery on ${EWW_BATTERY["BAT0"].capacity}%"
+                :tooltip "battery: ${EWW_BATTERY["BAT0"].capacity}%"
                 :show_truncated false
                 :wrap false
                 "")))))
@@ -126,14 +126,49 @@
           (label :class "date-year"      :text "${date_json.Y}"))))))
         ;; :text "${date_json.d}${month_display}${date_json.Y}")))))
 
+(defvar show_powermenu false)
+(defwidget powermenu_module []
+  (eventbox :onhover "${EWW_CMD} update show_powermenu=true; date +%s > /tmp/eww_powermenu_shown"
+            :onhoverlost "${EWW_CMD} update show_powermenu=false; rm -f /tmp/eww_powermenu_shown"
+    (box  :orientation "h"
+          :space-evenly "false"
+          :hexpand "false"
+          :class "powermenu"
+      (revealer :transition "slideleft"
+                :reveal show_powermenu
+                :duration "500ms"
+        (box  :orientation "h"
+              :space-evenly "false"
+          (button :class "button-hyprrestart"
+                  :tooltip "Restart Hyprland" 
+                  :onclick "hyprctl reload" "")  ; Reload Hyprland config
+          (button :class "button-quit"
+                  :tooltip "Exit Hyprland"
+                  :onclick "hyprctl dispatch exit" "󰍃")  ; Exit Hyprland gracefully
+          (button :class "button-lock"
+                  :tooltip "Lock Screen"
+                  :onclick "sh ~/.config/eww/scripts/lock.sh" "")
+          (button :class "button-reb"
+                  :tooltip "Reboot"
+                  :onclick "systemctl reboot" "")))  ; Systemd reboot
+      (button :class "button-off"
+              :tooltip "Shutdown"
+              :onclick "sh ~/.config/eww/scripts/powerbutton.sh" "󰐥"))))
+
 ;; ---------- bottom bar structure ----------
 ;; define widget groups
 (defwidget left []
-  (box  :orientation "h" 
-        :space-evenly false  
-        :halign "start"
-        :class "left_modules"
-    (dummy)))
+  (box :orientation "h"
+       :space-evenly false
+       :halign "start"
+       :class "left_modules"
+  (button :class "button-eww-restart"
+          :tooltip "Restart Eww"
+          :onclick "sh ~/.config/eww/scripts/restart_eww.sh"
+    (box :orientation "v" :halign "center" :spacing 0 :class "eww-restart-stack"
+      (label :class "eww-restart-top"    :text "eww")
+      (label :class "eww-restart-bottom" :text "⟲")))
+  (dummy)))
 
 (defwidget center []
   (box  :orientation "h" 
@@ -149,6 +184,8 @@
         :class "right_modules"
   (battery_module)
   (memory_module)
+  (sep)
+  (powermenu_module)
   (sep)
   (clock_module)))
 
