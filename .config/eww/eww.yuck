@@ -11,17 +11,18 @@
 ;; (defpoll clock_time :interval "5s" `date "+\%k \%M"`)
 ;; (defpoll clock_time :interval "5s" `date '+\%l \%M' \%p`)
 (defpoll clock_json :interval "5s" `date '+{"H":"%H","M":"%M"}'`)
-(defpoll date_json :interval "10h" `date '+{"d":"%d", "m":"%m", "b":"%b", "Y":"%Y"}'`)
+(defpoll date_json :interval "1h" `date '+{"d":"%d", "m":"%m", "b":"%b", "Y":"%Y"}'`)
 (defpoll clock_seconds :interval "1s" :run-while show_seconds `date +%S`)
 ;; (defpoll month_num_dot :interval "10h" `date '+.%m.'`)   ;; ".09."
 ;; (defpoll month_short_comma :interval "10h" `date '+ %b, '`) ;; "Sep,"
-(defpoll month_num_dot :interval "10h" `date '+.%m'`)   ;; ".09."
-(defpoll month_short_comma :interval "10h" `date '+ %b'`) ;; "Sep,"
-(defpoll month_display :interval "10h" `date '+.%m'`)   ;; ".09."
+(defpoll month_num_dot :interval "1h" `date '+.%m'`)   ;; ".09."
+(defpoll month_short_comma :interval "1h" `date '+ %b'`) ;; "Sep,"
+(defpoll month_display :interval "1h" `date '+.%m'`)   ;; ".09."
 ;; (defpoll system_memory_poll :interval "5s" `${BIN_DIR}/format_number $( ${EWW_CMD.available_mem} / 1024 / 1024 ) 0 `)
 ;; (defpoll system_memory_poll :interval "5s" `echo ${EWW_CMD} get available_mem` )
 ;; (defpoll system_memory_poll :interval "5s" (concat `scripts/bin/format_number $( `, EWW_CMD.available_mem )` / 1024 / 1024 ) 0 `)
 
+(defpoll has_battery :interval "1m" `if [ -d /sys/class/power_supply/BAT0 ]; then echo "true"; else echo "false"; fi`)
 (defpoll battery_json :interval "30s" `~/.config/eww/scripts/battery_info.sh json`)
 ;; (defpoll battery_percent :interval "30s" `~/.config/eww/scripts/battery_info.sh percent`)
 ;; (defpoll battery_icon :interval "30s" `~/.config/eww/scripts/battery_info.sh icon`)
@@ -55,18 +56,19 @@
         :width "150"))
 
 (defwidget battery_module []
-  (box  :class "battery_module"
-        :vexpand "false"
-        :hexpand "false"
+  (box :class "battery_module"
+       :vexpand "false"
+       :hexpand "false"
+       :visible {has_battery == "true"}
     (label :class "battery_percent" :text "${battery_json.percent}%")
     (label :class "icon" :text "${battery_json.icon}")
     (box :orientation "h" :halign "center" :valign "center" :height 10
-      (circular-progress  :class "progress_circle"
-                          :value {EWW_BATTERY["BAT0"].capacity}
-                          :thickness 4
+      (circular-progress :class "progress_circle"
+                         :value {has_battery == "true" ? battery_json.capacity : 0}
+                         :thickness 4
         (button :class "progress_icon"
                 :limit-width 2
-                :tooltip "battery: ${EWW_BATTERY["BAT0"].capacity}%"
+                :tooltip {has_battery == "true" ? "battery: ${battery_json.capacity}%" : "No battery"}
                 :show_truncated false
                 :wrap false
                 "")))))
@@ -199,7 +201,7 @@
 
 (defwindow bar0
   :exclusive true
-  :monitor 0
+  ;; :monitor 0
   :geometry (geometry 
     :x "0px"
     :y "0px"
@@ -225,7 +227,7 @@
   :stacking "fg"
   :focusable "false"
   :screen 1
-  :monitor 0
+  ;; :monitor 0
   :geometry (geometry
     :x "0.5%"
     :y "1%"
@@ -276,7 +278,7 @@
   :stacking "fg"
   :focusable "false"
   :screen 1
-  :monitor 0
+  ;; :monitor 0
   :geometry (geometry 
     :x "20px"
     :y "7%"

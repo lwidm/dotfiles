@@ -130,18 +130,15 @@ fi
 
 
 if [[ "$MYSYSTEM" == "DebianDesktop" ]]; then
-  # export LIBVA_DRIVER_NAME=nvidia
-  # export GBM_BACKEND=nvidia-drm
-  # export __GLX_VENDOR_LIBRARY_NAME=nvidia
-  # export WLR_NO_HARDWARE_CURSORS=1
+  export LIBVA_DRIVER_NAME=nvidia
+  export GBM_BACKEND=nvidia-drm
+  export __GLX_VENDOR_LIBRARY_NAME=nvidia
+  export WLR_NO_HARDWARE_CURSORS=1
   #
   # export GTK_SCALE=2
   # export GDK_DPI_SCALE=0.5
   # export QT_AUTO_SCREEN_SCALE_FACTOR=1
   # export QT_SCALE_FACTOR=2
-  if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
-    hyprland &
-  fi
 fi
 
 if [[ "$MYSYSTEM" == "ArchDesktop" ]]; then
@@ -150,10 +147,10 @@ if [[ "$MYSYSTEM" == "ArchDesktop" ]]; then
   export __GLX_VENDOR_LIBRARY_NAME=nvidia
   export WLR_NO_HARDWARE_CURSORS=1
 
-  export GTK_SCALE=2
-  export GDK_DPI_SCALE=0.5
-  export QT_AUTO_SCREEN_SCALE_FACTOR=1
-  export QT_SCALE_FACTOR=2
+  # export GTK_SCALE=2
+  # export GDK_DPI_SCALE=0.5
+  # export QT_AUTO_SCREEN_SCALE_FACTOR=1
+  # export QT_SCALE_FACTOR=2
   if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
     hyprland &
   fi
