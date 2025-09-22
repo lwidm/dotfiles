@@ -2,6 +2,13 @@
 
 set -euo pipefail
 
+if [ ! -d /sys/class/power_supply/BAT0 ]; then
+    echo '{"percent": "0", "icon": "󰚥", "capacity": "0"}'
+    exit 0
+fi
+
+# Your existing battery logic here...
+
 # usage: battery_info.sh [percent|icon|both|json]
 mode=${1:-icon}
 
