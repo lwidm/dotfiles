@@ -64,11 +64,11 @@
     (label :class "icon" :text "${battery_json.icon}")
     (box :orientation "h" :halign "center" :valign "center" :height 10
       (circular-progress :class "progress_circle"
-                         :value {has_battery == "true" ? battery_json.capacity : 0}
+                         :value {has_battery == "true" ? battery_json.percent : 0}
                          :thickness 4
         (button :class "progress_icon"
                 :limit-width 2
-                :tooltip {has_battery == "true" ? "battery: ${battery_json.capacity}%" : "No battery"}
+                :tooltip {has_battery == "true" ? "battery: ${battery_json.percent}%" : "No battery"}
                 :show_truncated false
                 :wrap false
                 "")))))
@@ -201,7 +201,7 @@
 
 (defwindow bar0
   :exclusive true
-  ;; :monitor 0
+  :monitor "eDP-1"
   :geometry (geometry 
     :x "0px"
     :y "0px"
