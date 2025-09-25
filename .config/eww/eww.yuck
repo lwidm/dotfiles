@@ -27,6 +27,9 @@
 ;; (defpoll battery_percent :interval "30s" `~/.config/eww/scripts/battery_info.sh percent`)
 ;; (defpoll battery_icon :interval "30s" `~/.config/eww/scripts/battery_info.sh icon`)
 
+(defpoll COL_WLAN :interval "1m"    "bash ~/.config/eww/scripts/wifi.sh --COL")
+(defpoll ESSID_WLAN :interval "1m"  "bash ~/.config/eww/scripts/wifi.sh --ESSID")
+(defpoll WLAN_ICON :interval "1m"   "bash ~/.config/eww/scripts/wifi.sh --ICON")
 
 
 ;; dummy
@@ -157,6 +160,24 @@
               :tooltip "Shutdown"
               :onclick "sh ~/.config/eww/scripts/powerbutton.sh" "󰐥"))))
 
+(defvar wifi_rev "false")
+(defwidget wifi_module []
+  (eventbox :onhover "${EWW_CMD} update wifi_rev=true"
+            :onhoverlost "${EWW_CMD} update wifi_rev=false"
+    (box :vexpand false :hexpand false :space-evenly false
+      (button :class "wifi_module" 
+              :onclick "networkmanager_dmenu" 
+              :wrap false 
+              :limit-width 12 
+              :style "color: ${COL_WLAN};" 
+              WLAN_ICON)
+      (revealer :transition "slideright"
+                :reveal wifi_rev
+                :duration "350ms"
+        (label  :class "module_essid"
+                :text ESSID_WLAN
+                :orientation "h")))))
+
 ;; ---------- bottom bar structure ----------
 ;; define widget groups
 (defwidget left []
@@ -184,6 +205,8 @@
         :space-evenly false  
         :halign "end"
         :class "right_modules"
+  (wifi_module)
+  (sep)
   (battery_module)
   (memory_module)
   (sep)

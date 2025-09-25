@@ -36,10 +36,10 @@ if [[ "$MYSYSTEM" == "DebLaptop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM"
 
     # Assign Workspaces to Monitors
     hyprctl keyword workspace "6,monitor:${MON1}"
-    hyprctl keyword workspace "5,monitor:${MON1}"
+    hyprctl keyword workspace "5,monitor:${MON_LAPTOP}"
     hyprctl keyword workspace "4,monitor:${MON1}"
     hyprctl keyword workspace "3,monitor:${MON_LAPTOP}"
-    hyprctl keyword workspace "2,monitor:${MON_LAPTOP}"
+    hyprctl keyword workspace "2,monitor:${MON1}"
     hyprctl keyword workspace "1,monitor:${MON_LAPTOP},default:true"
 
     xrandr --output ${MON_LAPTOP} --primary
