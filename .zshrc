@@ -221,3 +221,4 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+export PATH=$HOME/Software/PARTIES_Libs/bin:$PATH
