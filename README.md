@@ -17,6 +17,8 @@ This directory contains the dotfiles for my system
 - hyprpaper
 - hyprlock
 - hypridle
+- wireplumber
+- networkmanager-demnu
 
 ### fonts
 

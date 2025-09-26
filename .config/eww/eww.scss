@@ -198,6 +198,31 @@ tooltip label {
 .powermenu .button-quit:hover       { color: darken($teal, 12%); }
 .powermenu .button-off:hover        { color: darken($red, 12%); }
 
+/** --------- wifi audio brightness -------- **/
+.wifi_module {
+  font-size: 22;
+  color: #a1bdce;
+  border-radius: 100%;
+  margin: 0px 10px 0px 5px;
+}
+
+.brightbar trough highlight {
+  background-image: linear-gradient(to right, #e4c9af 30%, #f2cdcd 50%, #e0b089 100% *50);
+  border-radius: 10px;
+}
+
+.volbar trough highlight {
+  background-image: linear-gradient(to right, #afcee0 30%, #a1bdce 50%, #77a5bf 100% *50);
+  border-radius: 10px;
+}
+
+.volume_icon {
+    font-size: 22;
+    color: #a1bdce;
+  margin: 0px 10px 0px 10px;
+}
+
+
 /** --------- calendar -------- **/
 .calendar {
   background-color: $background;
