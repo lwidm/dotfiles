@@ -113,6 +113,9 @@ alias openTabletDriver-start="/usr/lib/opentabletdriver/OpenTabletDriver.Daemon 
 alias opentabletdriver-start="/usr/lib/opentabletdriver/OpenTabletDriver.Daemon &"
 alias opentabletGui-start="/usr/lib/opentabletdriver/OpenTabletDriver.UX.Gtk"
 alias opentabletgui-start="/usr/lib/opentabletdriver/OpenTabletDriver.UX.Gtk"
+alias ssh_home="ssh lukas@172.16.21.28"
+alias ssh_ucsblab="ssh lukas@jfm.me.ucsb.edu"
+alias ssh_anvil="ssh x-lwidmer@anvil.rcac.purdue.edu"
 
 # Conda
 
