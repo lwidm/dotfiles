@@ -6,7 +6,7 @@ essid=$(nmcli c | grep wlp0s20f3 | awk '{print ($1)}')
 if [ $status ] ; then
     icon="󰤫"
     text=""
-    col="#575268"
+    col="#ab0000"
 
 else
     icon="󰤨"
