@@ -35,6 +35,10 @@ if [[ "$MYSYSTEM" == "DebLaptop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM"
     hyprctl keyword monitor "${MON1},${RES1},${POS1},${SCALE1}"
 
     # Assign Workspaces to Monitors
+    hyprctl keyword workspace "0,monitor:${MON1}"
+    hyprctl keyword workspace "9,monitor:${MON_LAPTOP}"
+    hyprctl keyword workspace "8,monitor:${MON1}"
+    hyprctl keyword workspace "7,monitor:${MON_LAPTOP}"
     hyprctl keyword workspace "6,monitor:${MON1}"
     hyprctl keyword workspace "5,monitor:${MON_LAPTOP}"
     hyprctl keyword workspace "4,monitor:${MON1}"
