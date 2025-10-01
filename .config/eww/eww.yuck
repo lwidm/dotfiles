@@ -246,9 +246,20 @@
 		 ;;      :min 0
 		 ;;      :onchange "brightnessctl set {}%" )))))
 
+
+(deflisten workspaces :initial '{}' "~/.config/eww/scripts/hyprland-workspaces.py")
+
+(defwidget workspaces [monitor]
+  (box :orientation "h" :class "workspaces"
+    (for wsp in {workspaces[monitor]}
+      (button :class "workspace workspace_${wsp.class}"
+              :onclick "hyprctl dispatch workspace ${wsp.name}"
+        (box
+          (label :class "num" :text "${wsp.num}"))))))
+
 ;; ---------- bottom bar structure ----------
 ;; define widget groups
-(defwidget left []
+(defwidget left [monitor]
   (box :orientation "h"
        :space-evenly false
        :halign "start"
@@ -259,7 +270,7 @@
     (box :orientation "v" :halign "center" :spacing 0 :class "eww-restart-stack"
       (label :class "eww-restart-top"    :text "eww")
       (label :class "eww-restart-bottom" :text "⟲")))
-  (dummy)))
+  (workspaces :monitor monitor)))
 
 (defwidget center []
   (box  :orientation "h" 
@@ -285,10 +296,10 @@
   (clock_module)))
 
 ;; bar
-(defwidget bar_layout []
+(defwidget bar_layout [monitor]
   (centerbox  :class "bar_class"
               :orientation "h"
-    (left)
+    (left :monitor monitor)
     (center)
     (right)))
 
@@ -303,7 +314,20 @@
     :anchor "bottom center")
   :stacking "fg"
   :windowtype "dock"
-  (bar_layout))
+  (bar_layout :monitor "eDP-1"))
+
+(defwindow bar1
+  :exclusive true
+  :monitor "HDMI-A-1"
+  :geometry (geometry 
+    :x "0px"
+    :y "0px"
+    :width "100%"
+    :height "30px"
+    :anchor "bottom center")
+  :stacking "fg"
+  :windowtype "dock"
+  (bar_layout :monitor "HDMI-A-1"))
 
 
 ;; --------- calender ----------
