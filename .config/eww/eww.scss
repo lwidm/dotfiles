@@ -206,19 +206,51 @@ tooltip label {
   margin: 0px 10px 0px 5px;
 }
 
-.brightbar trough highlight {
-  background-image: linear-gradient(to right, #e4c9af 30%, #f2cdcd 50%, #e0b089 100% *50);
-  border-radius: 10px;
+.volbar {
+  min-height: 8px;
 }
 
-.volbar trough highlight {
+.volbar trough {
+  border-radius: 2px;
+  border-color: #000000;
+  border-width: 2px;
+  background-color: rgba(99,99,99,0.5);
+}
+
+/* Filled portion (highlight) */
+.volbar trough progress {
+  border-radius: 2px;
+  color: #afcee0;
   background-image: linear-gradient(to right, #afcee0 30%, #a1bdce 50%, #77a5bf 100% *50);
-  border-radius: 10px;
 }
 
 .volume_icon {
-    font-size: 22;
-    color: #a1bdce;
+  font-size: 22;
+  color: #a1bdce;
+  margin: 0px 10px 0px 10px;
+}
+
+.brightbar {
+  min-height: 8px;
+}
+
+.brightbar trough {
+  border-radius: 2px;
+  border-color: #000000;
+  border-width: 2px;
+  background-color: rgba(99,99,99,0.5);
+}
+
+/* Filled portion (highlight) */
+.brightbar trough progress {
+  border-radius: 2px;
+  color: #e4c9af;
+  background-image: linear-gradient(to right, #e4c9af, #f2cdcd, #e0b089);
+}
+
+.bright_icon {
+  font-size: 20;
+  color: #f2cdcd;
   margin: 0px 10px 0px 10px;
 }
 

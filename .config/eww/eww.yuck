@@ -31,9 +31,9 @@
 (defpoll ESSID_WLAN :interval "1m"  "bash ~/.config/eww/scripts/wifi.sh --ESSID")
 (defpoll WLAN_ICON :interval "1m"   "bash ~/.config/eww/scripts/wifi.sh --ICON")
 
-(defpoll volume_percent :interval "3s" " bash ~/.config/eww/scripts/sound.sh --percent")
-(defpoll volume_icon :interval "3s" " bash ~/.config/eww/scripts/sound.sh --icon")
-(defpoll mic_percent :interval "3s" "pactl get-source-volume @DEFAULT_SOURCE@ | grep -oE '[0-9]+%' | head -1 | tr -d '%'")
+(defpoll volume_percent :interval "1s" " bash ~/.config/eww/scripts/sound.sh --percent")
+(defpoll volume_icon :interval "1s" " bash ~/.config/eww/scripts/sound.sh --icon")
+(defpoll mic_percent :interval "1s" "pactl get-source-volume @DEFAULT_SOURCE@ | grep -oE '[0-9]+%' | head -1 | tr -d '%'")
 (defpoll brightness_percent :interval "5s" "brightnessctl -m | cut -d, -f4 | tr -d '%'")
 
 
@@ -191,18 +191,28 @@
           :space-evenly "false"
           :orientation "h"
           :spacing "3"
+          :vexpand "true"
+          :valign "center"
       (button :onclick "~/.config/eww/scripts/pop audio"
               :class "volume_icon" "${volume_icon}")
       (revealer :transition "slideleft"
                 :reveal vol_reveal
                 :duration "350ms"
-        (scale :class "volbar"
-              :value volume_percent
-              :orientation "h"
-              :tooltip "${volume_percent}"
-              :max 100
-              :min 0
-              :onchange "pactl set-sink-volume @DEFAULT_SINK@ {}%")))))
+                :vexpand "true"
+                :valign "center"
+          (progress :class "volbar"
+                    :value volume_percent
+                    :orientation "horizontal"
+                    :vexpand "true"
+                    :valign "center"
+		    )))))
+        ;; (scale :class "volbar"
+        ;;       :value volume_percent
+        ;;       :orientation "h"
+        ;;       :tooltip "${volume_percent}"
+        ;;       :max 100
+        ;;       :min 0
+        ;;       :onchange "pactl set-sink-volume @DEFAULT_SINK@ {}%")))))
 
 (defvar bright_reveal "false")
 (defwidget brightness_module []
@@ -212,19 +222,29 @@
           :space-evenly "false"
           :orientation "h"
           :spacing "3" 
+          :vexpand "true"
+          :valign "center"
       (label  :text ""
               :class "bright_icon"
               :tooltip "brightness")
       (revealer :transition "slideleft"
                 :reveal bright_reveal
                 :duration "350ms"
-	  (scale  :class "brightbar"
-		      :value "50"
-		      :orientation "h"
-		      :tooltip "${brightness_percent}%"
-		      :max 100
-		      :min 0
-		      :onchange "brightnessctl set {}%" )))))
+                :vexpand "true"
+                :valign "center"
+          (progress :class "brightbar"
+                    :value brightness_percent
+                    :orientation "horizontal"
+                    :vexpand "true"
+                    :valign "center"
+		    )))))
+	  ;; (scale  :class "brightbar"
+		 ;;      :value "50"
+		 ;;      :orientation "h"
+		 ;;      :tooltip "${brightness_percent}%"
+		 ;;      :max 100
+		 ;;      :min 0
+		 ;;      :onchange "brightnessctl set {}%" )))))
 
 ;; ---------- bottom bar structure ----------
 ;; define widget groups
