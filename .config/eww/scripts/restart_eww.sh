@@ -14,4 +14,5 @@
     pgrep -x eww >/dev/null && break
   done
   eww open bar0 >/dev/null 2>&1 || true
+  eww open bar1 >/dev/null 2>&1 || true
 ) & disown

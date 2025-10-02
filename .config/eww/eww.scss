@@ -9,7 +9,7 @@ $widget-background: rgba(30, 30, 30, 0.4);
 $shadow: rgba(00, 00, 00, 0.4);
 $grey: #606060;
 $lightgrey: #909090;
-$gap: 4px;
+$gap: 3px;
 $gap_top: 2px;
 
 $black: #3d4c5f;
@@ -21,9 +21,14 @@ $purple: #985eff;
 $teal: #24d1e7;
 $white: #e5e5e5;
 
-$border-radius: 10px;
+$border-radius: 8px;
 
 /** --------- General ---------- **/
+
+.debug {
+  margin: 0px;
+  font-size: 12px;
+}
 
 .phosphor_icon {
   font-family: "Phosphor";
@@ -33,7 +38,7 @@ $border-radius: 10px;
   background-color: $background;
   border-radius: $border-radius;
   border-style: solid;
-  border-width: 2;
+  border-width: 1;
   border-color: $green;
   margin: $gap_top $gap $gap $gap;
 }
@@ -74,30 +79,32 @@ tooltip label {
 .separator {
   color: $grey;
   font-weight: bold;
-  font-size: 22px;
-  margin: 0px 8px 0px 8px;
+  font-size: 14px;
+  margin: 0px 5px 0px 3px;
 }
 
 .progress_circle {
 }
 
 .progress_icon {
-  font-size: 14px
+  font-size: 5px;
+  padding: 0px;
 }
 
 .battery_module .icon {
-  font-size: 18px;
+  font-size: 12px;
 }
 
 .memory_module .icon {
-  font-size: 22px;
+  font-size: 14px;
+  margin-right: 8px;
 }
 
 .battery_percent {
   font-family: "Share Tech Mono";
   font-weight: normal;
   font-style: normal;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 @mixin bat_mem_styles($color, $margin-right, $margin-left) {
@@ -125,6 +132,7 @@ tooltip label {
 }
 
 .clock_module {
+  font-size: 10px;
   font-family: "Share Tech Mono";
   font-weight: normal;
   font-style: normal;
@@ -139,35 +147,47 @@ tooltip label {
   font-family: "Share Tech Mono";
   font-weight: normal;
   color: $white;
-  margin: 0 4px 0 2px;
+  margin: 0;
+}
+
+.time-stack label {
+  margin: -2px 0;
+  padding: 0;
 }
 
 .clock_time_seconds {
   font-family: "Share Tech Mono";
   font-weight: normal;
-  font-size: 12px;
-  margin-top: 2px;
+  font-size: 10px;
+  margin-top: 0px;
+  margin-left: 2px;
 }
 
 .date-stack {
-  margin: 0px 20px 0px 5px;
+  margin: 0px 8px 0px 5px;
   color: $white;
+}
+
+.date-stack label {
+  margin: -2px 0px;
+  padding: 0;
 }
 
 /** --------- Powermenu -------- **/
 .powermenu {
   font-family: feather;
-  font-size: 1.4em;
+  font-size: 12px;
   font-weight: bold;
 }
 .button-hyprrestart, .button-reb, .button-lock,
 .button-quit, .button-off{
-  padding: .5rem 1rem .3rem .2rem;
+  /* padding: .2rem .5rem .1rem .1rem; */
+  padding: 3px 5px;
 }
 .button-off{
-  font-size: 1.3em;
-  margin-bottom: .2rem;
-  padding-right: .2rem;
+  font-size: 12px;
+  margin-bottom: 3px;
+  padding-right: 5px;
   color: $red;
 }
 .button-hyprrestart{
@@ -201,10 +221,10 @@ tooltip label {
 
 /** --------- wifi audio brightness -------- **/
 .wifi_module {
-  font-size: 22;
+  font-size: 12;
   color: #a1bdce;
   border-radius: 100%;
-  margin: 0px 10px 0px 5px;
+  margin: 0px 5px 0px 3px;
 }
 
 .volbar {
@@ -226,9 +246,9 @@ tooltip label {
 }
 
 .volume_icon {
-  font-size: 22;
+  font-size: 12;
   color: #a1bdce;
-  margin: 0px 10px 0px 10px;
+  margin: 0px 5px 0px 3px;
 }
 
 .brightbar {
@@ -250,27 +270,28 @@ tooltip label {
 }
 
 .bright_icon {
-  font-size: 20;
+  font-size: 12px;
   color: #f2cdcd;
-  margin: 0px 10px 0px 10px;
+  margin: 0px 5px 0px 3px;
 }
 
 /** --------- Workspaces ---------- **/
 .workspaces {
-  margin: 0 6px;
+  margin: 1px 1px;
 }
 .workspace {
+
   background-color: transparent;
-  padding: 6px 10px;
-  margin: 0 3px;
+  padding: 3px 5px;
+  margin: 0 1px;
   border-radius: $border-radius;
   transition: transform 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
   /* border: 1px solid rgba(255,255,255,0.03); */
 }
 .workspace .num {
   font-family: "Share Tech Mono";
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: 800;
+  font-size: 12px;
   color: $lightgrey;
   padding: 0 2px;
 }
@@ -345,22 +366,19 @@ calendar {
 
 .system_memory_wrapper {
   border-radius: $border-radius;
-  margin: 15px 0px 15px 20px;
+  margin: 0px 0px 0px 0px;
 
   circular-progress {
     color: $orange;
     background-color: $grey;
-    border-radius: 10px;
+    border-radius: 1px;
   }
 }
 
 .system_memory_icon {
   color: $orange;
-}
-
-.system_memory_icon {
-  font-size: 30px;
-  margin: 30px;
+  font-size: 12px;
+  margin: 0px;
 }
 
 .system_memory_text {

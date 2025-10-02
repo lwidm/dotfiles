@@ -36,6 +36,12 @@
 (defpoll mic_percent :interval "1s" "pactl get-source-volume @DEFAULT_SOURCE@ | grep -oE '[0-9]+%' | head -1 | tr -d '%'")
 (defpoll brightness_percent :interval "5s" "brightnessctl -m | cut -d, -f4 | tr -d '%'")
 
+(defpoll song :interval "2s"            "~/.config/eww/scripts/music_info --song")
+(defpoll song_artist :interval "2s"     "~/.config/eww/scripts/music_info --artist")
+(defpoll current_status :interval "1s"  "~/.config/eww/scripts/music_info --time")
+(defpoll song_status :interval "2s"     "~/.config/eww/scripts/music_info --status")
+(defpoll cover_art :interval "2s"       "~/.config/eww/scripts/music_info --cover")
+
 
 ;; dummy
 (defwidget dummy []
@@ -44,7 +50,8 @@
 ;; debugging
 (defvar debug_var "nodebug")
 (defwidget debug []
-  (label :text debug_var))
+  (label  :text debug_var
+          :class "debug"))
 
 
 
@@ -70,34 +77,35 @@
        :visible {has_battery == "true"}
     (label :class "battery_percent" :text "${battery_json.percent}%")
     (label :class "icon" :text "${battery_json.icon}")
-    (box :orientation "h" :halign "center" :valign "center" :height 10
+    (box :orientation "h" :halign "center" :valign "center"
       (circular-progress :class "progress_circle"
                          :value {has_battery == "true" ? battery_json.percent : 0}
-                         :thickness 4
-        (button :class "progress_icon"
-                :limit-width 2
-                :tooltip {has_battery == "true" ? "battery: ${battery_json.percent}%" : "No battery"}
-                :show_truncated false
-                :wrap false
-                "")))))
+                         :thickness 8
+        ;; (button :class "progress_icon"
+        ;;         :limit-width 2
+        ;;         :tooltip {has_battery == "true" ? "battery: ${battery_json.percent}%" : "No battery"}
+        ;;         :show_truncated false
+        ;;         :wrap false
+                ;; "")
+      ))))
 
 (defwidget memory_module []
   (box  :class "memory_module"
         :vexpand "false"
         :hexpand "false" 
     (label :class "icon" :text "󰍛")
-    (box :orientation "h" :halign "center" :valign "center" :height 10
+    (box :orientation "h" :halign "center" :valign "center"
       (circular-progress  :class "progress_circle"
                           :value {EWW_RAM.used_mem_perc}
-                          :thickness 4
-                          :width: 20
-        (button :class "progress_icon"
-                :limit-width 2
-                :tooltip "using ${EWW_RAM.used_mem_perc}% ram"
-                :onclick "${EWW_CMD} open --toggle system"
-                :show_truncated false
-                :wrap false
-                "")))))
+                          :thickness 8
+        ;; (button :class "progress_icon"
+        ;;         :limit-width 2
+        ;;         :tooltip "using ${EWW_RAM.used_mem_perc}% ram"
+        ;;         :onclick "${EWW_CMD} open --toggle system"
+        ;;         :show_truncated false
+        ;;         :wrap false
+        ;;         "")
+      ))))
 
 ;; adjust paths if you put scripts elsewhere
 (defvar seconds_start_script "$~/.config/eww/scripts/eww_seconds_start.sh")
@@ -257,9 +265,44 @@
         (box
           (label :class "num" :text "${wsp.num}"))))))
 
+
+(defvar music_reveal "false")
+(defwidget music []
+  (eventbox :onhover "${EWW_CMD} update music_reveal=true"
+            :onhoverlost "${EWW_CMD} update music_reveal=false"
+    (box  :orientation "h"
+          :space-evenly "false"
+          :vexpand "false"
+          :hexpand "false"
+      (box  :class "song_cover_art"
+            :vexpand "false"
+            :hexpand "false"
+            )
+            ;; :style "background-image: url('${cover_art}');")
+      (label :text "debug_musci")
+      (button :class "song"
+              :wrap "true"
+              )
+              ;; :onclick "~/.config/eww/scripts/pop music" song)
+      (revealer :transition "slideright"
+	        :reveal music_reveal
+	        :duration "350ms"
+        (box  :vexpand "false"
+              :hexpand "false"
+              :orientation "h" 
+          (button :class "song_btn_prev"
+                  ;; :onclick "~/.config/eww/bar/scripts/music_info --prev"
+                  "")
+	  ;; (button :class "song_btn_play"
+   ;;                :onclick "~/.config/eww/bar/scripts/music_info --toggle"
+   ;;                song_status)
+	  (button :class "song_btn_next"
+                  ;; :onclick "~/.config/eww/bar/scripts/music_info --next"
+                  ""))))))
+
 ;; ---------- bottom bar structure ----------
 ;; define widget groups
-(defwidget left [monitor]
+(defwidget left_main [monitor]
   (box :orientation "h"
        :space-evenly false
        :halign "start"
@@ -268,8 +311,15 @@
           :tooltip "Restart Eww"
           :onclick "sh ~/.config/eww/scripts/restart_eww.sh"
     (box :orientation "v" :halign "center" :spacing 0 :class "eww-restart-stack"
-      (label :class "eww-restart-top"    :text "eww")
-      (label :class "eww-restart-bottom" :text "⟲")))
+      (label :class "eww-restart-top"    :text "eww ⟲")))
+      ;; (label :class "eww-restart-bottom" :text "⟲")))
+  (workspaces :monitor monitor)))
+
+(defwidget left [monitor]
+  (box :orientation "h"
+       :space-evenly false
+       :halign "start"
+       :class "left_modules"
   (workspaces :monitor monitor)))
 
 (defwidget center []
@@ -296,12 +346,17 @@
   (clock_module)))
 
 ;; bar
-(defwidget bar_layout [monitor]
+(defwidget bar_layout_main [monitor]
   (centerbox  :class "bar_class"
               :orientation "h"
-    (left :monitor monitor)
+    (left_main :monitor monitor)
     (center)
     (right)))
+
+(defwidget bar_layout [monitor]
+  (box  :class "bar_class"
+        :orientation "h"
+    (left :monitor monitor)))
 
 (defwindow bar0
   :exclusive true
@@ -310,11 +365,11 @@
     :x "0px"
     :y "0px"
     :width "100%"
-    :height "30px"
+    :height "10px"
     :anchor "bottom center")
   :stacking "fg"
   :windowtype "dock"
-  (bar_layout :monitor "eDP-1"))
+  (bar_layout_main :monitor "eDP-1"))
 
 (defwindow bar1
   :exclusive true
@@ -323,7 +378,7 @@
     :x "0px"
     :y "0px"
     :width "100%"
-    :height "30px"
+    :height "10px"
     :anchor "bottom center")
   :stacking "fg"
   :windowtype "dock"
@@ -367,7 +422,7 @@
           :space-evenly "false"
           :halign "start"
       (circular-progress :value {EWW_RAM.used_mem_perc}
-                         :thickness 9
+                         :thickness 2
         (label  :class "system_memory_icon Phosphor_icon"
                 :text ""
                 :limit-width 2
