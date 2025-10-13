@@ -421,3 +421,94 @@ calendar {
   font-size: 12px;
   margin-top: 0px;
 }
+
+
+// --------- music ----------
+
+.music_cover_art {
+	background-size: cover;
+	background-position: center;
+	min-height: 100px;
+    box-shadow: 5px 5px 5px 5px #06060b;
+	min-width: 170px;
+	margin: 20px;
+	border-radius: 20px;
+}
+
+.music {
+	color: #a1bdce;
+	font-size : 20px;
+	font-weight : bold;
+	margin : 20px 0px 0px -15px;
+}
+
+.music_artist {
+	color: #bbc5d7;
+	font-size : 16px;
+	font-weight : normal;
+	margin : 0px 0px 0px 0px;
+}
+
+.music_btn_prev, .music_btn_play, .music_btn_next {
+	font-family: Iosevka Nerd Font;
+}
+.music_btn_prev {
+	color: #bbc5d7;
+	font-size : 32px;
+	font-weight : normal;
+	margin: 0px 0px 0px 0px;
+}
+.music_btn_play {
+	color: #a1bdce;
+	font-size : 48px;
+	font-weight : normal;
+	margin: 0px 0px 0px 0px;
+}
+.music_btn_next {
+	color: #bbc5d7;
+	font-size : 32px;
+	font-weight : normal;
+	margin: 0px 0px 0px 0px;
+}
+
+// --------- notifications ----------
+
+
+
+$end-default-bg: #3a454a;
+$end-default-fg: #d3c6aa;
+$end-red: #e67e80;
+$end-bgcolor: rgba(0, 0, 0, 0);
+
+.end-default-notification-box {
+  background-color: $end-default-bg;
+  padding: 12px;
+  padding-left: 8px;
+  margin: 12px;
+  border-radius: 10px;
+}
+
+.notification-text {
+  color: $end-default-fg;
+  /* font-family: 'FantasqueSansM Nerd Font Mono'; */
+}
+
+.notification-title {
+  font-weight: bold;
+  font-size: 1em;
+}
+
+.notification-content {
+  font-size: .8em;
+}
+
+.content-box {
+  margin-left: 12px;
+}
+
+.battery-icon {
+  color: $end-red;
+  font-size: 2.1em;
+  margin-right: 48px;
+  margin-left: 24px;
+}

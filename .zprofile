@@ -14,3 +14,4 @@ export PATH=$PATH:$HOME/.cargo/bin
 export PATH=$PATH:$HOME/go/bin/
 export PATH=$PATH:/snap/bin
 export PATH=$PATH:/home/lukas/ParaView-5.10.1-MPI-Linux-Python3.9-x86_64/bin
+export PATH=$PATH:/var/lib/snapd/snap/bin

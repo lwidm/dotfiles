@@ -36,11 +36,11 @@
 (defpoll mic_percent :interval "1s" "pactl get-source-volume @DEFAULT_SOURCE@ | grep -oE '[0-9]+%' | head -1 | tr -d '%'")
 (defpoll brightness_percent :interval "5s" "brightnessctl -m | cut -d, -f4 | tr -d '%'")
 
-(defpoll song :interval "2s"            "~/.config/eww/scripts/music_info --song")
-(defpoll song_artist :interval "2s"     "~/.config/eww/scripts/music_info --artist")
-(defpoll current_status :interval "1s"  "~/.config/eww/scripts/music_info --time")
-(defpoll song_status :interval "2s"     "~/.config/eww/scripts/music_info --status")
-(defpoll cover_art :interval "2s"       "~/.config/eww/scripts/music_info --cover")
+(defpoll song :interval "2s"            "bash ~/.config/eww/scripts/music_info.sh --song")
+(defpoll song_artist :interval "2s"     "bash ~/.config/eww/scripts/music_info.sh --artist")
+(defpoll current_status :interval "1s"  "bash ~/.config/eww/scripts/music_info.sh --time")
+(defpoll song_status :interval "2s"     "bash ~/.config/eww/scripts/music_info.sh --status")
+(defpoll cover_art :interval "2s"       "bash ~/.config/eww/scripts/music_info.sh --cover")
 
 
 ;; dummy
@@ -267,19 +267,20 @@
 
 
 (defvar music_reveal "false")
-(defwidget music []
+(defwidget music_module []
   (eventbox :onhover "${EWW_CMD} update music_reveal=true"
             :onhoverlost "${EWW_CMD} update music_reveal=false"
     (box  :orientation "h"
           :space-evenly "false"
           :vexpand "false"
           :hexpand "false"
-      (box  :class "song_cover_art"
-            :vexpand "false"
-            :hexpand "false"
-            )
-            ;; :style "background-image: url('${cover_art}');")
-      (label :text "debug_musci")
+      ;; (image :class "song_cover_art"
+      ;;        :vexpand false
+      ;;        :hexpand false
+      ;;        :image-width 48
+      ;;        :image-height 48
+      ;;        :path "${cover_art}")
+      (label :text "${song}")
       (button :class "song"
               :wrap "true"
               )
@@ -290,14 +291,15 @@
         (box  :vexpand "false"
               :hexpand "false"
               :orientation "h" 
+              :spacing 5
           (button :class "song_btn_prev"
-                  ;; :onclick "~/.config/eww/bar/scripts/music_info --prev"
+                  :onclick "bahs ~/.config/eww/scripts/music_info.sh --prev"
                   "")
-	  ;; (button :class "song_btn_play"
-   ;;                :onclick "~/.config/eww/bar/scripts/music_info --toggle"
-   ;;                song_status)
+	  (button :class "song_btn_play"
+                  :onclick "bash ~/.config/eww/scripts/music_info.sh --toggle"
+                  song_status)
 	  (button :class "song_btn_next"
-                  ;; :onclick "~/.config/eww/bar/scripts/music_info --next"
+                  :onclick "bash ~/.config/eww/scripts/music_info.sh --next"
                   ""))))))
 
 ;; ---------- bottom bar structure ----------
@@ -327,7 +329,7 @@
         :space-evenly false  
         :halign "center"
         :class "center_modules"
-    (debug)))
+    (music_module)))
 
 (defwidget right []
   (box  :orientation "h" 
@@ -450,7 +452,7 @@
   :stacking "fg"
   :focusable "false"
   :screen 1
-  ;; :monitor 0
+  :monitor "eDP-1"
   :geometry (geometry 
     :x "20px"
     :y "7%"
@@ -460,6 +462,92 @@
   (system_module))
 
 
+;; --------- Notifications ----------
 
+(defvar end-notifications '')
 
+(defwindow notification-frame
+ :monitor 0
+ :geometry (geometry 
+   :x "0px"
+   :y "0px"
+   :width "480px"
+   :height "0px"
+   :anchor "top right")
+ :stacking "fg"
+ :windowtype "dialog"
+ :passthrough true
+ :wm-ignore true
+ (literal :content end-notifications))
 
+(defwidget end-notification
+  [notification]
+  (literal :content {
+    notification.hints["type"] == "battery" 
+    ? '(battery-notification :notification notification)'
+    : '(base-notification :notification notification)' }))
+
+(defwidget base-notification
+  [notification]
+  (eventbox
+    :onclick "end close ${notification.id}" ; use the end close command to implement "click-to-dismiss"
+    :valign "start"
+    :height 100
+    (box
+      :class "end-default-notification-box"
+      :orientation "horizontal"
+      :space-evenly false
+      (image
+        :path {notification.hints["image-path"]} ; end sets this property if the notification contains an image
+        :image-width 100
+        :image-height 100
+      )
+      (box
+        :class "content-box"
+        :orientation "vertical"
+        :space-evenly "false"
+        (label 
+          :class "notification-text notification-title"
+          :valign "start"
+          :yalign 0
+          :xalign 0
+          :text {notification.summary})
+        (label
+          :class "notification-text notification-content"
+          :valign "start"
+          :yalign 0
+          :xalign 0
+          :vexpand true
+          :wrap true
+          :text {notification.body})))))
+
+(defwidget battery-notification
+  [notification]
+  (eventbox
+    :onclick "end close ${notification.id}" 
+    (box
+      :class "end-default-notification-box"
+      :orientation "horizontal"
+      :space-evenly false
+      (label
+        :class "notification-text battery-icon"
+        :yalign 0.5
+        :xalign 0.5
+        :text "${battery_json.icon}"
+      )
+      (box
+        :orientation "vertical"
+        :hexpand true
+        (label 
+          :class "notification-text notification-title"
+          :hexpand true
+          :yalign 0.5
+          :xalign 0
+          :text "Low Battery")
+        (label
+          :class "notification-text"
+          :vexpand true
+          :hexpand true
+          :yalign 0.5
+          :xalign 0
+          :text "${battery_json.percent}% remaining"))))) ; of course we can still use eww built-ins!
