@@ -19,6 +19,8 @@ This directory contains the dotfiles for my system
 - hypridle
 - wireplumber
 - networkmanager-demnu
+- mpc
+- playerctl
 
 ### fonts
 
@@ -102,6 +104,10 @@ sudo pacman -S zoxide
 ```zsh
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 ```
+
+## Make eww work with music (spotify and audible)
+make sure mpc and playerctl are running
+
 
 # Possible Bugs
 

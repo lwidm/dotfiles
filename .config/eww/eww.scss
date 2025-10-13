@@ -425,50 +425,101 @@ calendar {
 
 // --------- music ----------
 
-.music_cover_art {
-	background-size: cover;
-	background-position: center;
-	min-height: 100px;
-    box-shadow: 5px 5px 5px 5px #06060b;
-	min-width: 170px;
-	margin: 20px;
-	border-radius: 20px;
+.music_container {
 }
 
-.music {
-	color: #a1bdce;
-	font-size : 20px;
-	font-weight : bold;
-	margin : 20px 0px 0px -15px;
+.music_content {
 }
 
-.music_artist {
-	color: #bbc5d7;
-	font-size : 16px;
-	font-weight : normal;
-	margin : 0px 0px 0px 0px;
+.song_cover_art {
+  min-height: 48px;
+  min-width: 48px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 8px $shadow;
+}
+
+.song_info, .song_cover_text {
+  font-family: "Share Tech Mono";
+  font-size: 12px;
+}
+
+.song {
+  color: $white;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: "Share Tech Mono";
+}
+
+.song_artist {
+  color: $lightgrey;
+  font-size: 10px;
+  font-weight: normal;
+  font-family: "Share Tech Mono";
+}
+
+.music_controls {
+  margin-left: 8px;
 }
 
 .music_btn_prev, .music_btn_play, .music_btn_next {
-	font-family: Iosevka Nerd Font;
+  font-family: "Share Tech Mono";
+  padding: 4px 6px;
+  transition: all 120ms ease;
 }
-.music_btn_prev {
-	color: #bbc5d7;
-	font-size : 32px;
-	font-weight : normal;
-	margin: 0px 0px 0px 0px;
+
+.music_btn_prev, .music_btn_next {
+  color: $lightgrey;
+  font-size: 14px;
+  font-weight: normal;
 }
+
 .music_btn_play {
-	color: #a1bdce;
-	font-size : 48px;
-	font-weight : normal;
-	margin: 0px 0px 0px 0px;
+  color: $green;
+  font-size: 16px;
+  font-weight: bold;
 }
-.music_btn_next {
-	color: #bbc5d7;
-	font-size : 32px;
-	font-weight : normal;
-	margin: 0px 0px 0px 0px;
+
+/* Hover effects */
+.music_btn_prev:hover, .music_btn_next:hover {
+  background-color: rgba($blue, 0.3);
+  color: $white;
+  border-color: rgba($blue, 0.5);
+}
+
+.music_btn_play:hover {
+  background-color: rgba($green, 0.3);
+  color: lighten($green, 10%);
+  border-color: rgba($green, 0.5);
+}
+
+/* Progress bar for music */
+.musicbar {
+  min-height: 8px;
+}
+
+.musicbar trough {
+  border-radius: 2px;
+  border-color: #000000;
+  border-width: 2px;
+  background-color: rgba(99,99,99,0.5);
+}
+
+/* Filled portion (highlight) */
+.musicbar trough progress {
+  border-radius: 2px;
+  color: #afcee0;
+  background: linear-gradient(to right, #3da885, #53e2ae);
+}
+
+.music_time {
+  color: $lightgrey;
+  font-size: 9px;
+  font-family: "Share Tech Mono";
+  margin: 0 2px;
+}
+
+.time_container {
 }
 
 // --------- notifications ----------

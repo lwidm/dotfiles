@@ -75,6 +75,23 @@ get_ttime() {
 	fi
 }
 
+get_progress() {
+    status=$(playerctl status 2>/dev/null)
+    if [[ "$status" != "Playing" && "$status" != "Paused" ]]; then
+        echo "0"
+        return
+    fi
+    current_time=$(get_ctime)
+    total_time=$(get_ttime)
+    current_seconds=$(echo "$current_time" | awk -F: '{if (NF==2) print $1*60+$2; else if (NF==3) print $1*3600+$2*60+$3}')
+    total_seconds=$(echo "$total_time" | awk -F: '{if (NF==2) print $1*60+$2; else if (NF==3) print $1*3600+$2*60+$3}')
+    if [[ -z "$current_seconds" || -z "$total_seconds" || "$total_seconds" -eq 0 ]]; then
+        echo "0"
+    else
+        awk "BEGIN {printf \"%.0f\", ($current_seconds / $total_seconds) * 100}" 2>/dev/null || echo "0"
+    fi
+}
+
 ## Get cover art URL/path (if available)
 get_cover() {
 	# Note: This depends on the player providing this metadata
@@ -130,8 +147,11 @@ case "$1" in
 	--prev)
 		playerctl previous
 		;;
+	--progress)
+		get_progress
+		;;
 	*)
-		echo "Usage: $0 {--song|--artist|--album|--status|--volume|--ctime|--ttime|--cover|--toggle|--next|--prev}"
+		echo "Usage: $0 {--song|--artist|--album|--status|--volume|--ctime|--ttime|--cover|--toggle|--next|--prev|--progress}"
 		exit 1
 		;;
 esac
