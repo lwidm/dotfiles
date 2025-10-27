@@ -220,11 +220,18 @@ tooltip label {
 .powermenu .button-off:hover        { color: darken($red, 12%); }
 
 /** --------- wifi audio brightness -------- **/
-.wifi_module {
+.wifi_icon {
   font-size: 12;
   color: #a1bdce;
-  border-radius: 100%;
   margin: 0px 5px 0px 3px;
+}
+.wifi_module{
+  padding: 1em 5px 1em 5px;
+}
+.wifi_module:hover {
+  background-color: rgba(255,255,255,0.04);
+  color: $white;
+  border-radius: 5px;
 }
 
 .volbar {
@@ -285,7 +292,7 @@ tooltip label {
   padding: 3px 5px;
   margin: 0 1px;
   border-radius: $border-radius;
-  transition: transform 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
+  transition: transform 120ms ease, background-color 120ms ease;
   /* border: 1px solid rgba(255,255,255,0.03); */
 }
 .workspace .num {
@@ -297,11 +304,9 @@ tooltip label {
 }
 .workspace:hover {
   background-color: rgba(255,255,255,0.04);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.18);
 }
 .workspace_active {
   border-color: rgba(0,0,0,0.25);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.28);
 }
 .workspace_active .num {
   color: $white;

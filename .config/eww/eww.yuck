@@ -27,14 +27,14 @@
 ;; (defpoll battery_percent :interval "30s" `~/.config/eww/scripts/battery_info.sh percent`)
 ;; (defpoll battery_icon :interval "30s" `~/.config/eww/scripts/battery_info.sh icon`)
 
-(defpoll COL_WLAN :interval "1m"    "bash ~/.config/eww/scripts/wifi.sh --COL")
+(defpoll COL_WLAN :interval "10s"    "bash ~/.config/eww/scripts/wifi.sh --COL")
 (defpoll ESSID_WLAN :interval "1m"  "bash ~/.config/eww/scripts/wifi.sh --ESSID")
-(defpoll WLAN_ICON :interval "1m"   "bash ~/.config/eww/scripts/wifi.sh --ICON")
+(defpoll WLAN_ICON :interval "10s"   "bash ~/.config/eww/scripts/wifi.sh --ICON")
 
 (defpoll volume_percent :interval "1s" " bash ~/.config/eww/scripts/sound.sh --percent")
 (defpoll volume_icon :interval "1s" " bash ~/.config/eww/scripts/sound.sh --icon")
 (defpoll mic_percent :interval "1s" "pactl get-source-volume @DEFAULT_SOURCE@ | grep -oE '[0-9]+%' | head -1 | tr -d '%'")
-(defpoll brightness_percent :interval "5s" "brightnessctl -m | cut -d, -f4 | tr -d '%'")
+(defpoll brightness_percent :interval "1s" "brightnessctl -m | cut -d, -f4 | tr -d '%'")
 
 (defpoll song_name :interval "2s"         "bash ~/.config/eww/scripts/music_info.sh --song")
 (defpoll song_artist_name :interval "2s"  "bash ~/.config/eww/scripts/music_info.sh --artist")
@@ -180,8 +180,9 @@
 (defwidget wifi_module []
   (eventbox :onhover "${EWW_CMD} update wifi_rev=true"
             :onhoverlost "${EWW_CMD} update wifi_rev=false"
+            :class "wifi_module"
     (box :vexpand false :hexpand false :space-evenly false
-      (button :class "wifi_module" 
+      (button :class "wifi_icon"
               :onclick "networkmanager_dmenu" 
               :wrap false 
               :limit-width 12 

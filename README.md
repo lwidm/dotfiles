@@ -19,6 +19,7 @@ This directory contains the dotfiles for my system
 - hypridle
 - wireplumber
 - networkmanager-demnu
+- python-gobject
 - mpc
 - playerctl
 
