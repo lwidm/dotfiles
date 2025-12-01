@@ -3,8 +3,8 @@
 #
 export XDG_CONFIG_HOME=$HOME/.config
 VIM="nvim"
-export CC="clang-12"
-export CXX="clang++-12"
+export CC="clang"
+export CXX="clang++"
 export PYTHONBREAKPOINT="pudb.set_trace"
 export GIT_EDITOR=$VIM
 export LIBVIRT_DEFAULT_URI='qemu:///system'

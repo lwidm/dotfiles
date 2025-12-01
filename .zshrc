@@ -117,6 +117,11 @@ alias ssh_home="ssh lukas@172.16.21.28"
 alias ssh_ucsblab="ssh lukas@jfm.me.ucsb.edu"
 alias ssh_anvil="ssh x-lwidmer@anvil.rcac.purdue.edu"
 
+# Default file explorer
+if command -v pcmanfm >/dev/null 2>&1; then
+  xdg-mime default pcmanfm.desktop inode/directory
+fi
+
 # Conda
 
 # Environment variables
