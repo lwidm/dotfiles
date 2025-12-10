@@ -4,10 +4,7 @@ if [ -f ~/.MYSYSTEM ]; then
 fi
 
 # Autostart ssh-agent
-if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM" == "DebDesktop" || "$MYSYSTEM" == "DebLaptop" || "$MYSYSTEM" == "ArchDesktop" || "$MYSYSTEM" == "ArchLaptop" ]]; then
-  if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
-    eval "$(ssh-agent -s)" > /dev/null
-  fi
+if [[ "$MYSYSTEM" == "DebianDesktop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM" == "DebDesktop" || "$MYSYSTEM" == "DebLaptop" || "$MYSYSTEM" == "ArchDesktop" || "$MYSYSTEM" == "ArchLaptop" || "$MYSYSTEM" == "wslLaptop"]]; then
   if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
     eval "$(ssh-agent -s)" > /dev/null
   fi
