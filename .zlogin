@@ -52,9 +52,12 @@ fi
 
 if [[ "$MYSYSTEM" = "wslDebianDesktop" || "$MYSYSTEM" = "wslDebianLaptop" ]]; then
   export PATH="$PATH:/usr/nvim-linux-x86_64/bin"
-  if [[ "$MYSYSTEM" = "wslDebianLaptop" ]]; then
+
+  FIX_MARKER="/tmp/.wslg_fix_done"
+  if [[ "$MYSYSTEM" = "wslDebianLaptop" ]] && [[ ! -f "$FIX_MARKER" ]]; then
     echo "fix wslg"
     sudo ~/wslg_fix.sh
+    touch "$FIX_MARKER"
   fi
 fi
 
