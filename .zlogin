@@ -40,13 +40,13 @@ if [[ "$MYSYSTEM" = "ArchDesktop" ]]; then
   # export QT_AUTO_SCREEN_SCALE_FACTOR=1
   # export QT_SCALE_FACTOR=2
   if [[ -z "$DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
-    hyprland &
+    start-hyprland
   fi
 fi
 
 if [[ "$MYSYSTEM" = "ArchLaptop" ]]; then
   if [[ -z "$DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
-    hyprland &
+    start-hyprland
   fi
 fi
 
