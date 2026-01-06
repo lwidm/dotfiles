@@ -31,7 +31,7 @@ install a nerd font
 ### **!!! DO this before running stow command!!!**
 ```zsh
 rm ~/.zshrc ~/.bashrc
-mkdir -p ~/.local/bin ~/.local/share ~/.local/state ~/.local/include
+mkdir -p ~/.local/bin ~/.local/share/applications ~/.local/state ~/.local/include
 mkdir -p ~/.config
 mkdir -p ~/.config/rclone
 ```

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=StayFree
+Comment=Website usage tracker
+Exec=/home/lukas/.local/bin/stayfree
+Icon=stayfree
+Terminal=false
+Categories=Utility;
