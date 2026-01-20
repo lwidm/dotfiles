@@ -12,27 +12,27 @@ if [[ "$MYSYSTEM" == "DebLaptop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM"
     MON2=""               # Second external monitor
 
     # Resolutions and refresh rates based on your actual setup
-    RES_LAPTOP="2880x1800@60.00Hz"
-    # RES_LAPTOP="2880x1800@120.00Hz"
+    RES_LAPTOP="2880x1800@120.00Hz"
+    # RES_LAPTOP="1440x900@120.00Hz"   # logical size, scale=2 from 2880x1800@120
     RES1="1920x1080@60.00Hz"
     RES2="1920x1080@60.00Hz"
 
     # Positions based on your actual setup - USE COMMAS, not 'x'
-    POS_LAPTOP="0x0"    # Laptop display position
-    POS1="-260x-1080"               # First external monitor position
+    POS1="0x0"               # First external monitor position
     # POS2="2919,0"          # Second external monitor position
+    POS_LAPTOP="240x1080"    # Laptop display position
 
     # Scaling factors
     SCALE_LAPTOP=2
     SCALE1=1
     SCALE2=1
 
-    # Configure Monitors
+    # Configure Monitors: Note: since i am using positive coordinates the screens need to be defined from top to bottom and left to right (the monitor with position "0x0" needs to be defined first)
+    hyprctl keyword monitor "${MON1},${RES1},${POS1},${SCALE1}"
     hyprctl keyword monitor "${MON_LAPTOP},${RES_LAPTOP},${POS_LAPTOP},${SCALE_LAPTOP}"
     if hyprctl monitors | grep -q "HDMI-A-2"; then
 	hyprctl keyword monitor "${MON2},${RES2},${POS2},${SCALE2}"
     fi
-    hyprctl keyword monitor "${MON1},${RES1},${POS1},${SCALE1}"
 
     # Assign Workspaces to Monitors
     hyprctl keyword workspace "0,monitor:${MON1}"
