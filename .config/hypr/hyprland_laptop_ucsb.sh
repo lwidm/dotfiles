@@ -18,16 +18,18 @@ if [[ "$MYSYSTEM" == "DebLaptop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM"
     RES2="1920x1080@60.00Hz"
 
     # Positions based on your actual setup - USE COMMAS, not 'x'
-    POS1="0x0"               # First external monitor position
+    # POS1="0x0"               # First external monitor position
+    POS1="-240x-1080"        # Laptop display position
     # POS2="2919,0"          # Second external monitor position
-    POS_LAPTOP="240x1080"    # Laptop display position
+    # POS_LAPTOP="240x1080"    # Laptop display position
+    POS_LAPTOP="0x0"    # Laptop display position
 
     # Scaling factors
     SCALE_LAPTOP=2
     SCALE1=1
     SCALE2=1
 
-    # Configure Monitors: Note: since i am using positive coordinates the screens need to be defined from top to bottom and left to right (the monitor with position "0x0" needs to be defined first)
+    # Configure Monitors: Note: she monitor with position "0x0" needs to be defined first
     hyprctl keyword monitor "${MON1},${RES1},${POS1},${SCALE1}"
     hyprctl keyword monitor "${MON_LAPTOP},${RES_LAPTOP},${POS_LAPTOP},${SCALE_LAPTOP}"
     if hyprctl monitors | grep -q "HDMI-A-2"; then
