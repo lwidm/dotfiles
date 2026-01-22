@@ -17,6 +17,8 @@ This directory contains the dotfiles for my system
 - hyprpaper
 - hyprlock
 - hypridle
+- hyprshot
+- (flameshot)
 - wireplumber
 - networkmanager-demnu
 - python-gobject
