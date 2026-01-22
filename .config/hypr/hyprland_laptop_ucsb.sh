@@ -48,6 +48,17 @@ if [[ "$MYSYSTEM" == "DebLaptop" || "$MYSYSTEM" == "DebianLaptop" || "$MYSYSTEM"
     hyprctl keyword workspace "2,monitor:${MON1}"
     hyprctl keyword workspace "1,monitor:${MON_LAPTOP},default:true"
 
+    hyprctl keyword workspace "100,monitor:${MON1}"
+    hyprctl keyword workspace "90,monitor:${MON_LAPTOP}"
+    hyprctl keyword workspace "80,monitor:${MON1}"
+    hyprctl keyword workspace "70,monitor:${MON_LAPTOP}"
+    hyprctl keyword workspace "60,monitor:${MON1}"
+    hyprctl keyword workspace "50,monitor:${MON_LAPTOP}"
+    hyprctl keyword workspace "40,monitor:${MON1}"
+    hyprctl keyword workspace "30,monitor:${MON_LAPTOP}"
+    hyprctl keyword workspace "20,monitor:${MON1}"
+    hyprctl keyword workspace "10,monitor:${MON_LAPTOP}"
+
     xrandr --output ${MON_LAPTOP} --primary
 
     hyprctl dispatch focusmonitor 0
