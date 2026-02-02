@@ -1,2 +1,10 @@
 .config/tmux/plugins/
 .MYSYSTEM
+
+# Affinity
+.local/share/icons/Affinity.svg
+.local/share/icons/AffinityDesigner.svg
+.local/share/icons/AffinityPhoto.svg
+.local/share/icons/AffinityPublisher.svg
+.local/share/icons/hicolor/
+
