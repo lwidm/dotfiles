@@ -116,6 +116,18 @@ alias opentabletgui-start="/usr/lib/opentabletdriver/OpenTabletDriver.UX.Gtk"
 alias ssh_home="ssh lukas@172.16.21.28"
 alias ssh_ucsblab="ssh lukas@jfm.me.ucsb.edu"
 alias ssh_anvil="ssh x-lwidmer@anvil.rcac.purdue.edu"
+pycalc() {
+  ~/miniconda3/bin/python3 -i -c "
+for _mod, _name in [('numpy', 'np'), ('scipy', None), ('matplotlib.pyplot', 'plt'), ('h5py', None)]:
+    try:
+        _m = __import__(_mod)
+        if '.' in _mod: _m = getattr(_m, _mod.split('.')[-1])
+        globals()[_name or _mod.split('.')[-1]] = _m
+    except ImportError:
+        print(f'Warning: {_mod} not found')
+del _mod, _name, _m
+"
+}
 
 # Default file explorer
 if command -v pcmanfm >/dev/null 2>&1; then
