@@ -7,12 +7,12 @@ This directory contains the dotfiles for my system
 ## Requirements
 - git
 - wl-clipboard
-- ttf-hack
+- ttf-hack (Debian: fonts-hack)
 - virtualbox-guest-utils
 - sway
 - ttf-font-awesome
 - wofi
-- oh-my-zsh
+- oh-my-zsh (Debian: install script. See below)
 - polybar
 - hyprpaper
 - hyprlock
@@ -20,8 +20,8 @@ This directory contains the dotfiles for my system
 - hyprshot
 - (flameshot)
 - wireplumber
-- networkmanager-demnu
-- python-gobject
+- networkmanager-dmenu (Debian: just in network-manager)
+- python-gobject (Debian: python3-gi)
 - mpc
 - playerctl
 
