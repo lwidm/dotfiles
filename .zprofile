@@ -11,6 +11,9 @@ export PYTHONBREAKPOINT="pudb.set_trace"
 export GIT_EDITOR=$VIM
 export LIBVIRT_DEFAULT_URI='qemu:///system'
 
+# Force NVIDIA EGL vendor — bypasses Mesa DRI2 failures on NVIDIA+Wayland
+export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
+
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/.cargo/bin
 export PATH=$PATH:$HOME/go/bin/

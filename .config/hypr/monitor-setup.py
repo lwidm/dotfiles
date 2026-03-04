@@ -39,6 +39,7 @@ class MonitorProfile:
     transform: int = 0      # 0=none, 1=90, 2=180, 3=270
     disable: bool = False
     is_builtin: bool = False  # True for eDP-* built-in panels
+    workspace_priority: int | None = None  # lower = higher priority; None = no assignment
 
 
 KNOWN_MONITORS: dict[str, MonitorProfile] = {
@@ -46,17 +47,20 @@ KNOWN_MONITORS: dict[str, MonitorProfile] = {
         match_description="DELL U2724D",
         resolution="2560x1440@59.95",
         scale=1.0,
+        workspace_priority=2,
     ),
     "dell_u2723qe": MonitorProfile(
         match_description="DELL U2723QE",
         resolution="3840x2160@60",
-        scale=1.6,
+        scale=1.333333,  # 4/3: 3840x2160 → exact 2880x1620
+        workspace_priority=1,
     ),
     "dell_s2719dgf": MonitorProfile(
         match_description="DELL S2719DGF",
         resolution="2560x1440@60",
         scale=1.0,
         transform=3,  # 270 degrees
+        workspace_priority=3,
     ),
     "pikvm": MonitorProfile(
         # TODO : Adjust this string after checking `hyprctl -j monitors` with PiKVM connected
@@ -113,9 +117,9 @@ KNOWN_LAYOUTS: list[KnownLayout] = [
         required=frozenset({"dell_u2724d", "dell_u2723qe", "dell_s2719dgf", "pikvm"}),
         placements={
             "dell_u2724d":   MonitorPlacement("dell_u2724d",   "0x560"),
-            "dell_u2723qe":  MonitorPlacement("dell_u2723qe",  "2560x560"),
-            "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "4960x0"),
-            "pikvm":         MonitorPlacement("pikvm",         "6560x740"),
+            "dell_u2723qe":  MonitorPlacement("dell_u2723qe",  "2560x470"),
+            "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "5440x0"),
+            "pikvm":         MonitorPlacement("pikvm",         "6880x740"),
         },
         primary_key="dell_u2723qe",
     ),
@@ -125,10 +129,67 @@ KNOWN_LAYOUTS: list[KnownLayout] = [
         required=frozenset({"dell_u2724d", "dell_u2723qe", "dell_s2719dgf"}),
         placements={
             "dell_u2724d":   MonitorPlacement("dell_u2724d",   "0x560"),
-            "dell_u2723qe":  MonitorPlacement("dell_u2723qe",  "2560x560"),
-            "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "4960x0"),
+            "dell_u2723qe":  MonitorPlacement("dell_u2723qe",  "2560x470"),
+            "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "5440x0"),
         },
         primary_key="dell_u2723qe",
+    ),
+    # Desktop: left + center only (no rotated right monitor)
+    KnownLayout(
+        name="desktop_left_center",
+        required=frozenset({"dell_u2724d", "dell_u2723qe"}),
+        placements={
+            "dell_u2724d":  MonitorPlacement("dell_u2724d",  "0x0"),
+            "dell_u2723qe": MonitorPlacement("dell_u2723qe", "2560x0"),
+        },
+        primary_key="dell_u2723qe",
+    ),
+    # Desktop: center + right only (no left monitor)
+    KnownLayout(
+        name="desktop_center_right",
+        required=frozenset({"dell_u2723qe", "dell_s2719dgf"}),
+        placements={
+            "dell_u2723qe":  MonitorPlacement("dell_u2723qe",  "0x470"),
+            "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "2880x0"),
+        },
+        primary_key="dell_u2723qe",
+    ),
+    # Desktop: left + right only (no center 4K monitor)
+    KnownLayout(
+        name="desktop_left_right",
+        required=frozenset({"dell_u2724d", "dell_s2719dgf"}),
+        placements={
+            "dell_u2724d":   MonitorPlacement("dell_u2724d",   "0x560"),
+            "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "2560x0"),
+        },
+        primary_key="dell_u2724d",
+    ),
+    # Desktop: left monitor alone
+    KnownLayout(
+        name="desktop_left_only",
+        required=frozenset({"dell_u2724d"}),
+        placements={
+            "dell_u2724d": MonitorPlacement("dell_u2724d", "0x0"),
+        },
+        primary_key="dell_u2724d",
+    ),
+    # Desktop: center 4K monitor alone
+    KnownLayout(
+        name="desktop_center_only",
+        required=frozenset({"dell_u2723qe"}),
+        placements={
+            "dell_u2723qe": MonitorPlacement("dell_u2723qe", "0x0"),
+        },
+        primary_key="dell_u2723qe",
+    ),
+    # Desktop: right rotated monitor alone
+    KnownLayout(
+        name="desktop_right_only",
+        required=frozenset({"dell_s2719dgf"}),
+        placements={
+            "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "0x0"),
+        },
+        primary_key="dell_s2719dgf",
     ),
     # Laptop + UCSB HDMI monitor (external above laptop)
     KnownLayout(
@@ -312,6 +373,7 @@ def apply_monitor_config(monitors: list[dict]) -> None:
     if layout is not None:
         print(f"Matched layout: {layout.name}")
         _apply_known_layout(layout, identified)
+        apply_workspace_assignments(identified)
         # Auto-place any extra monitors not in the layout
         if unidentified:
             _auto_place_extra(unidentified, layout, identified)
@@ -342,6 +404,19 @@ def apply_monitor_config(monitors: list[dict]) -> None:
         try_set_xrandr_primary(primary_name)
 
     print("Monitor configuration complete.")
+
+
+def apply_workspace_assignments(identified: dict[str, str]) -> None:
+    """Set active workspace on each monitor in priority order (priority 1 = workspace 1)."""
+    prioritized = sorted(
+        [(key, name) for key, name in identified.items()
+         if KNOWN_MONITORS[key].workspace_priority is not None],
+        key=lambda x: KNOWN_MONITORS[x[0]].workspace_priority,  # type: ignore[arg-type]
+    )
+    for ws_num, (profile_key, hypr_name) in enumerate(prioritized, start=1):
+        run_cmd(["hyprctl", "dispatch", "focusmonitor", hypr_name])
+        run_cmd(["hyprctl", "dispatch", "workspace", str(ws_num)])
+        print(f"  workspace {ws_num} -> {hypr_name}")
 
 
 def _apply_known_layout(layout: KnownLayout, identified: dict[str, str]) -> None:

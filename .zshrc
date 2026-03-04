@@ -33,8 +33,6 @@ del _mod, _name, _m
 }
 
 
-# Conda
-
 # Environment variables
 if [ -f ~/.MYSYSTEM ]; then
   source ~/.MYSYSTEM
