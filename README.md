@@ -123,7 +123,7 @@ Full guide: [github.com/ajeetdsouza/zoxide](https://github.com/ajeetdsouza/zoxid
 
 - OpenSUSE:
 ```zsh
-sudo zypper in z
+sudo zypper in zoxide
 ```
 
 ---
