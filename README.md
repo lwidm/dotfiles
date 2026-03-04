@@ -21,8 +21,9 @@ This directory contains the dotfiles for my system
 - (flameshot)
 - wireplumber
 - networkmanager-dmenu (Debian: just in network-manager, OpenSUSE: NetworkManager-applet)
-- python-gobject (Debian: python3-gi)
-- mpc
+- python-gobject (Debian: python3-gi, OpenSUSE: python-gobject-common-devel)
+- mpd
+- mpc (OpenSUSE: mpclient)
 - playerctl
 
 ### fonts
