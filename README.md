@@ -7,7 +7,7 @@ This directory contains the dotfiles for my system
 ## Requirements
 - git
 - wl-clipboard
-- ttf-hack (Debian: fonts-hack)
+- ttf-hack (Debian: fonts-hack, OpenSUSE: hack-fonts)
 - virtualbox-guest-utils
 - sway
 - ttf-font-awesome
@@ -20,7 +20,7 @@ This directory contains the dotfiles for my system
 - hyprshot
 - (flameshot)
 - wireplumber
-- networkmanager-dmenu (Debian: just in network-manager)
+- networkmanager-dmenu (Debian: just in network-manager, OpenSUSE: NetworkManager-applet)
 - python-gobject (Debian: python3-gi)
 - mpc
 - playerctl
