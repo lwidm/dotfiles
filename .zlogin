@@ -1,16 +1,16 @@
-# Environment variables
-if [ -f ~/.MYSYSTEM ]; then
-  source ~/.MYSYSTEM
+# Default file explorer
+if command -v pcmanfm >/dev/null 2>&1; then
+  xdg-mime default pcmanfm.desktop inode/directory
 fi
 
 # Autostart ssh-agent
-if [[ "$MYSYSTEM" = "DebianDesktop" || "$MYSYSTEM" = "DebianLaptop" || "$MYSYSTEM" = "DebDesktop" || "$MYSYSTEM" = "DebLaptop" || "$MYSYSTEM" = "ArchDesktop" || "$MYSYSTEM" = "ArchLaptop" || "$MYSYSTEM" = "wslDebianDesktop" || "$MYSYSTEM" = "wslDebianLaptop" ]]; then
-  if [[ -z "$DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
-    eval "$(ssh-agent -s)" > /dev/null
-  fi
-  if [[ -n $SSH_CONNECTION ]] && [[ -t 1 ]]; then
-    eval "$(ssh-agent -s)" > /dev/null
-  fi
+if [[ "$MYSYSTEM" = "DebianDesktop" || "$MYSYSTEM" = "DebianLaptop" || "$MYSYSTEM" = "DebDesktop" || "$MYSYSTEM" = "DebLaptop" || "$MYSYSTEM" = "ArchDesktop" || "$MYSYSTEM" = "ArchLaptop" || "$MYSYSTEM" = "OpenSuseDesktop" || "$MYSYSTEM" = "OpenSuseLaptop" || "$MYSYSTEM" = "wslDebianDesktop" || "$MYSYSTEM" = "wslDebianLaptop" ]]; then
+  # if [[ -z "$DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
+  #   eval "$(ssh-agent -s)" > /dev/null
+  # fi
+  # if [[ -n $SSH_CONNECTION ]] && [[ -t 1 ]]; then
+  #   eval "$(ssh-agent -s)" > /dev/null
+  # fi
   if [ -z "$SSH_AUTH_SOCK" ]; then
     eval "$(ssh-agent -s)" > /dev/null
   fi
@@ -45,6 +45,23 @@ if [[ "$MYSYSTEM" = "ArchDesktop" ]]; then
 fi
 
 if [[ "$MYSYSTEM" = "ArchLaptop" ]]; then
+  if [[ -z "$DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
+    start-hyprland
+  fi
+fi
+
+if [[ "$MYSYSTEM" = "OpenSuseDesktop" ]]; then
+  export LIBVA_DRIVER_NAME=nvidia
+  export GBM_BACKEND=nvidia-drm
+  export __GLX_VENDOR_LIBRARY_NAME=nvidia
+  export WLR_NO_HARDWARE_CURSORS=1
+
+  if [[ -z "$DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
+    start-hyprland
+  fi
+fi
+
+if [[ "$MYSYSTEM" = "OpenSuseLaptop" ]]; then
   if [[ -z "$DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
     start-hyprland
   fi

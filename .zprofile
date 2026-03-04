@@ -3,6 +3,8 @@
 #
 export XDG_CONFIG_HOME=$HOME/.config
 VIM="nvim"
+export EDITOR="nvim"
+export VISUAL="nvim"
 export CC="clang"
 export CXX="clang++"
 export PYTHONBREAKPOINT="pudb.set_trace"
@@ -16,4 +18,4 @@ export PATH=$PATH:/snap/bin
 export PATH=$PATH:/home/lukas/ParaView-5.10.1-MPI-Linux-Python3.9-x86_64/bin
 export PATH=$PATH:/var/lib/snapd/snap/bin
 
-export PATH=$HOME/your_directory/PARTIES_Libs/bin:$PATH
+[[ -f ~/vulkansdk/default/setup-env.sh ]] && source ~/vulkansdk/default/setup-env.sh
