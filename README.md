@@ -36,9 +36,8 @@ sudo apt install git wl-clipboard fonts-hack ttf-font-awesome wofi polybar hyprp
 
 ### OpenSUSE Tumbleweed
 ```bash
-sudo zypper in git wl-clipboard hack-fonts wofi polybar hyprpaper hyprlock hypridle flameshot wireplumber python-gobject-common-devel mpd mpclient playerctl NetworkManager-applet zoxide
+sudo zypper in git wl-clipboard hack-fonts wofi polybar hyprpaper hyprlock hypridle hyprshot flameshot wireplumber python-gobject-common-devel mpd mpclient playerctl NetworkManager-applet zoxide
 ```
-- `hyprshot`: install manually (not in zypper)
 - `oh-my-zsh`: install via script (see [Zsh](#zsh))
 - nerd font: install manually (see [fonts](#fonts))
 
