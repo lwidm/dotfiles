@@ -101,41 +101,53 @@ class KnownLayout:
     required: frozenset[str]  # set of profile_keys that must ALL be present
     placements: dict[str, MonitorPlacement]  # profile_key -> placement
     primary_key: str  # which profile_key is primary
+    priority_order: list[str] = None  # apply order: first gets workspace 1. defaults to placements order
+
+    def __post_init__(self):
+        if self.priority_order is None:
+            self.priority_order = list(self.placements.keys())
 
 
 KNOWN_LAYOUTS: list[KnownLayout] = [
     # Desktop: triple monitors + PiKVM (most specific first)
+    # Positions rebased so 4K (u2723qe) is at x=0; left monitor has negative x.
+    # Apply order matches priority_order so Hyprland assigns workspaces naturally.
+    # s2719dgf is rotated 270°: logical size 1440×2560 (tallest, determines y-offsets)
+    # u2723qe: 1620 tall → y=(2560-1620)/2=470; u2724d: 1440 tall → y=(2560-1440)/2=560
     KnownLayout(
         name="desktop_triple_pikvm",
         required=frozenset({"dell_u2724d", "dell_u2723qe", "dell_s2719dgf", "pikvm"}),
         placements={
-            "dell_u2724d":   MonitorPlacement("dell_u2724d",   "0x560"),
-            "dell_u2723qe":  MonitorPlacement("dell_u2723qe",  "2560x470"),
-            "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "5440x0"),
-            "pikvm":         MonitorPlacement("pikvm",         "6880x740"),
+            "dell_u2723qe":  MonitorPlacement("dell_u2723qe",  "0x470"),
+            "dell_u2724d":   MonitorPlacement("dell_u2724d",   "-2560x560"),
+            "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "2880x0"),
+            "pikvm":         MonitorPlacement("pikvm",         "4320x740"),
         },
         primary_key="dell_u2723qe",
+        priority_order=["dell_u2723qe", "dell_u2724d", "dell_s2719dgf", "pikvm"],
     ),
     # Desktop: triple monitors without PiKVM
     KnownLayout(
         name="desktop_triple",
         required=frozenset({"dell_u2724d", "dell_u2723qe", "dell_s2719dgf"}),
         placements={
-            "dell_u2724d":   MonitorPlacement("dell_u2724d",   "0x560"),
-            "dell_u2723qe":  MonitorPlacement("dell_u2723qe",  "2560x470"),
-            "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "5440x0"),
+            "dell_u2723qe":  MonitorPlacement("dell_u2723qe",  "0x470"),
+            "dell_u2724d":   MonitorPlacement("dell_u2724d",   "-2560x560"),
+            "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "2880x0"),
         },
         primary_key="dell_u2723qe",
+        priority_order=["dell_u2723qe", "dell_u2724d", "dell_s2719dgf"],
     ),
     # Desktop: left + center only (no rotated right monitor)
     KnownLayout(
         name="desktop_left_center",
         required=frozenset({"dell_u2724d", "dell_u2723qe"}),
         placements={
-            "dell_u2724d":  MonitorPlacement("dell_u2724d",  "0x0"),
-            "dell_u2723qe": MonitorPlacement("dell_u2723qe", "2560x0"),
+            "dell_u2723qe": MonitorPlacement("dell_u2723qe", "0x0"),
+            "dell_u2724d":  MonitorPlacement("dell_u2724d",  "-2560x0"),
         },
         primary_key="dell_u2723qe",
+        priority_order=["dell_u2723qe", "dell_u2724d"],
     ),
     # Desktop: center + right only (no left monitor)
     KnownLayout(
@@ -146,6 +158,7 @@ KNOWN_LAYOUTS: list[KnownLayout] = [
             "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "2880x0"),
         },
         primary_key="dell_u2723qe",
+        priority_order=["dell_u2723qe", "dell_s2719dgf"],
     ),
     # Desktop: left + right only (no center 4K monitor)
     KnownLayout(
@@ -156,6 +169,7 @@ KNOWN_LAYOUTS: list[KnownLayout] = [
             "dell_s2719dgf": MonitorPlacement("dell_s2719dgf", "2560x0"),
         },
         primary_key="dell_u2724d",
+        priority_order=["dell_u2724d", "dell_s2719dgf"],
     ),
     # Desktop: left monitor alone
     KnownLayout(
@@ -391,12 +405,14 @@ def apply_monitor_config(monitors: list[dict]) -> None:
 
 
 def _apply_known_layout(layout: KnownLayout, identified: dict[str, str]) -> None:
-    """Apply exact positions from a known layout."""
+    """Apply exact positions from a known layout, in priority_order so that
+    Hyprland assigns workspace 1 to the first-initialized (highest-priority) monitor."""
     profile_key: str
     placement: MonitorPlacement
-    for profile_key, placement in layout.placements.items():
+    for profile_key in layout.priority_order:
         if profile_key not in identified:
             continue
+        placement = layout.placements[profile_key]
         hypr_name: str = identified[profile_key]
         profile: MonitorProfile = KNOWN_MONITORS[profile_key]
         cmd = f"{hypr_name},{profile.resolution},{placement.position},{profile.scale}"
