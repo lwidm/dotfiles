@@ -39,7 +39,6 @@ class MonitorProfile:
     transform: int = 0      # 0=none, 1=90, 2=180, 3=270
     disable: bool = False
     is_builtin: bool = False  # True for eDP-* built-in panels
-    workspace_priority: int | None = None  # lower = higher priority; None = no assignment
 
 
 KNOWN_MONITORS: dict[str, MonitorProfile] = {
@@ -47,20 +46,17 @@ KNOWN_MONITORS: dict[str, MonitorProfile] = {
         match_description="DELL U2724D",
         resolution="2560x1440@59.95",
         scale=1.0,
-        workspace_priority=2,
     ),
     "dell_u2723qe": MonitorProfile(
         match_description="DELL U2723QE",
         resolution="3840x2160@60",
         scale=1.333333,  # 4/3: 3840x2160 → exact 2880x1620
-        workspace_priority=1,
     ),
     "dell_s2719dgf": MonitorProfile(
         match_description="DELL S2719DGF",
         resolution="2560x1440@60",
         scale=1.0,
         transform=3,  # 270 degrees
-        workspace_priority=3,
     ),
     "pikvm": MonitorProfile(
         # TODO : Adjust this string after checking `hyprctl -j monitors` with PiKVM connected
@@ -373,7 +369,6 @@ def apply_monitor_config(monitors: list[dict]) -> None:
     if layout is not None:
         print(f"Matched layout: {layout.name}")
         _apply_known_layout(layout, identified)
-        apply_workspace_assignments(identified)
         # Auto-place any extra monitors not in the layout
         if unidentified:
             _auto_place_extra(unidentified, layout, identified)
@@ -405,18 +400,6 @@ def apply_monitor_config(monitors: list[dict]) -> None:
 
     print("Monitor configuration complete.")
 
-
-def apply_workspace_assignments(identified: dict[str, str]) -> None:
-    """Set active workspace on each monitor in priority order (priority 1 = workspace 1)."""
-    prioritized = sorted(
-        [(key, name) for key, name in identified.items()
-         if KNOWN_MONITORS[key].workspace_priority is not None],
-        key=lambda x: KNOWN_MONITORS[x[0]].workspace_priority,  # type: ignore[arg-type]
-    )
-    for ws_num, (profile_key, hypr_name) in enumerate(prioritized, start=1):
-        run_cmd(["hyprctl", "dispatch", "focusmonitor", hypr_name])
-        run_cmd(["hyprctl", "dispatch", "workspace", str(ws_num)])
-        print(f"  workspace {ws_num} -> {hypr_name}")
 
 
 def _apply_known_layout(layout: KnownLayout, identified: dict[str, str]) -> None:
