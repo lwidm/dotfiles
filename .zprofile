@@ -2,6 +2,7 @@
 # ~/.zprofile
 #
 export XDG_CONFIG_HOME=$HOME/.config
+[[ -f ~/.MYSYSTEM ]] && source ~/.MYSYSTEM
 VIM="nvim"
 export EDITOR="nvim"
 export VISUAL="nvim"
@@ -11,8 +12,8 @@ export PYTHONBREAKPOINT="pudb.set_trace"
 export GIT_EDITOR=$VIM
 export LIBVIRT_DEFAULT_URI='qemu:///system'
 
-# Force NVIDIA EGL vendor — bypasses Mesa DRI2 failures on NVIDIA+Wayland
-export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
+# Force NVIDIA EGL vendor — bypasses Mesa DRI2 failures on NVIDIA+Wayland (desktop only)
+[[ "$MYSYSTEM" == "OpenSuseDesktop" ]] && export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
 
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/.cargo/bin
