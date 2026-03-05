@@ -5,7 +5,7 @@ This directory contains the dotfiles for my system.
 ## Quick Start
 
 ```zsh
-git clone https://github.com/lwidm/dotfiles ~/dotfiles
+git clone git@github.com:lwidm/dotfiles.git ~/dotfiles
 ```
 
 Then follow in order:
