@@ -79,10 +79,7 @@ KNOWN_MONITORS: dict[str, MonitorProfile] = {
         match_description="M14t",
         resolution="1920x1080@60",
     ),
-    "ucsb_hdmi": MonitorProfile(
-        match_description="Dell Inc. DELL P2412H KG49T2A734FU",
-        resolution="1920x1080@60",
-    ),
+
 }
 
 
@@ -187,16 +184,7 @@ KNOWN_LAYOUTS: list[KnownLayout] = [
         },
         primary_key="dell_s2719dgf",
     ),
-    # Laptop + UCSB HDMI monitor (external above laptop)
-    KnownLayout(
-        name="laptop_ucsb",
-        required=frozenset({"laptop_edp", "ucsb_hdmi"}),
-        placements={
-            "laptop_edp": MonitorPlacement("laptop_edp", "0x0"),
-            "ucsb_hdmi":  MonitorPlacement("ucsb_hdmi",  "-240x-1080"),
-        },
-        primary_key="laptop_edp",
-    ),
+
     # Laptop + ThinkVision M14t (M14t on the left)
     KnownLayout(
         name="laptop_thinkvision",
