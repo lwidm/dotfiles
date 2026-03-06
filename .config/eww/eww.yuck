@@ -535,11 +535,12 @@
         :class "content-box"
         :orientation "vertical"
         :space-evenly "false"
-        (label 
+        (label
           :class "notification-text notification-title"
           :valign "start"
           :yalign 0
           :xalign 0
+          :markup true
           :text {notification.summary})
         (label
           :class "notification-text notification-content"
@@ -548,6 +549,7 @@
           :xalign 0
           :vexpand true
           :wrap true
+          :markup true
           :text {notification.body})))))
 
 (defwidget battery-notification
