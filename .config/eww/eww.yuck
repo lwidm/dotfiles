@@ -495,22 +495,23 @@
 
 
 ;; --------- Notifications ----------
+;; To re-enable end: uncomment defvar + defwindow below, and swap exec lines in hyprland.conf
 
-(defvar end-notifications '')
+;; (defvar end-notifications '')
 
-(defwindow notification-frame
- :monitor 0
- :geometry (geometry 
-   :x "0px"
-   :y "0px"
-   :width "480px"
-   :height "0px"
-   :anchor "top right")
- :stacking "fg"
- :windowtype "dialog"
- :passthrough true
- :wm-ignore true
- (literal :content end-notifications))
+;; (defwindow notification-frame
+;;  :monitor 0
+;;  :geometry (geometry
+;;    :x "0px"
+;;    :y "0px"
+;;    :width "480px"
+;;    :height "0px"
+;;    :anchor "top right")
+;;  :stacking "fg"
+;;  :windowtype "dialog"
+;;  :passthrough true
+;;  :wm-ignore true
+;;  (literal :content end-notifications))
 
 (defwidget end-notification
   [notification]
@@ -543,7 +544,6 @@
           :valign "start"
           :yalign 0
           :xalign 0
-          :markup true
           :text {notification.summary})
         (label
           :class "notification-text notification-content"
@@ -552,7 +552,6 @@
           :xalign 0
           :vexpand true
           :wrap true
-          :markup true
           :text {notification.body})))))
 
 (defwidget battery-notification
