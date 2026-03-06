@@ -81,9 +81,13 @@
        :hexpand "false"
        :space-evenly false
        :spacing 0
-       :visible {has_battery == "true"}
-    (label :class "battery_percent" :text "${battery_json.percent}%")
-    (label :class "icon" :text "${battery_json.icon}")
+    ;; Battery: show percent + icon on laptop, AC plug icon on desktop
+    (label :class "battery_percent" :text "${battery_json.percent}%"
+           :visible {has_battery == "true"})
+    (label :class "icon" :text "${battery_json.icon}"
+           :visible {has_battery == "true"})
+    (label :class "icon ac_icon" :text "󰚥"
+           :visible {has_battery == "false"})
     (eventbox :hexpand false
                 :onhover "${EWW_CMD} update tuned_hovered=true"
                 :onhoverlost "${EWW_CMD} update tuned_hovered=false"
@@ -94,11 +98,10 @@
                     :duration "250ms"
             (label :class "tuned_label" :text "${tuned_json.profile}"))))
     (box :orientation "h" :halign "center" :valign "center"
+         :visible {has_battery == "true"}
       (circular-progress :class "progress_circle"
-                         :value {has_battery == "true" ? battery_json.percent : 0}
+                         :value {battery_json.percent}
                          :thickness 8
-        ;; (button :class "progress_icon"
-        ;;         :limit-width 2
         ;;         :tooltip {has_battery == "true" ? "battery: ${battery_json.percent}%" : "No battery"}
         ;;         :show_truncated false
         ;;         :wrap false
