@@ -4,6 +4,7 @@
 (defvar not_time_rev true)
 (defvar is_calendar_open false)
 (defvar show_seconds false)
+(defvar tuned_hovered false)
 (defvar gap "0.5%")
 (defvar double_gap "1%")
 (defvar bar_width "99%")
@@ -24,6 +25,7 @@
 
 (defpoll has_battery :interval "1m" `if [ -d /sys/class/power_supply/BAT0 ]; then echo "true"; else echo "false"; fi`)
 (defpoll battery_json :interval "30s" `~/.config/eww/scripts/battery_info.sh json`)
+(defpoll tuned_json :interval "30s" `~/.config/eww/scripts/tuned_info.sh`)
 ;; (defpoll battery_percent :interval "30s" `~/.config/eww/scripts/battery_info.sh percent`)
 ;; (defpoll battery_icon :interval "30s" `~/.config/eww/scripts/battery_info.sh icon`)
 
@@ -77,9 +79,20 @@
   (box :class "battery_module"
        :vexpand "false"
        :hexpand "false"
+       :space-evenly false
+       :spacing 0
        :visible {has_battery == "true"}
     (label :class "battery_percent" :text "${battery_json.percent}%")
     (label :class "icon" :text "${battery_json.icon}")
+    (eventbox :hexpand false
+                :onhover "${EWW_CMD} update tuned_hovered=true"
+                :onhoverlost "${EWW_CMD} update tuned_hovered=false"
+        (box :orientation "h" :valign "center" :hexpand false :space-evenly false :spacing 0
+          (label :class "icon tuned_icon" :text "${tuned_json.icon}")
+          (revealer :transition "slideright"
+                    :reveal tuned_hovered
+                    :duration "250ms"
+            (label :class "tuned_label" :text "${tuned_json.profile}"))))
     (box :orientation "h" :halign "center" :valign "center"
       (circular-progress :class "progress_circle"
                          :value {has_battery == "true" ? battery_json.percent : 0}

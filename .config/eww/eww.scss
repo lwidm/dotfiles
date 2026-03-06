@@ -91,8 +91,25 @@ tooltip label {
   padding: 0px;
 }
 
+.battery_module {
+  margin-right: 4px;
+}
+
 .battery_module .icon {
   font-size: 12px;
+  margin-right: 4px;
+}
+
+.battery_module .icon.tuned_icon {
+  margin-left: 4px;
+  margin-right: 8px;
+}
+
+.battery_module .tuned_label {
+  font-family: "Share Tech Mono";
+  font-size: 12px;
+  margin-right: 9px;
+  min-width: 0;
 }
 
 .memory_module .icon {
@@ -100,11 +117,12 @@ tooltip label {
   margin-right: 8px;
 }
 
-.battery_percent {
+.battery_module .battery_percent {
   font-family: "Share Tech Mono";
   font-weight: normal;
   font-style: normal;
   font-size: 12px;
+  margin-right: 2px;
 }
 
 @mixin bat_mem_styles($color, $margin-right, $margin-left) {
