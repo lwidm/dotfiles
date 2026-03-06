@@ -7,24 +7,24 @@ case "$profile" in
 esac
 
 case "$profile" in
-  "accelerator-performance")    icon="" ;;
-  "aws")                        icon="" ;;
+  "accelerator-performance")    icon="󰾲 󰢮 " ;;
+  "aws")                        icon=" " ;;
   "balanced")                   icon="󰾅" ;;
   "balanced-battery")           icon="󰾆" ;;
-  "cpu-partitioning")           icon="" ;;
-  "cpu-partitioning-powersave") icon="" ;;
+  "cpu-partitioning")           icon="󰻠 " ;;
+  "cpu-partitioning-powersave") icon="󰻠 󰒲" ;;
   "desktop")                    icon="󰍹" ;;
-  "hpc-compute")                icon="" ;;
-  "intel-sst")                  icon="" ;;
-  "latency-performance")        icon="" ;;
-  "mssql")                      icon="" ;;
-  "network-latency")            icon="" ;;
-  "network-throughput")         icon="" ;;
-  "optimize-serial-console")    icon="" ;;
+  "hpc-compute")                icon="󰒋" ;;
+  "intel-sst")                  icon="󰻠 int" ;;
+  "latency-performance")        icon="󱦺" ;;
+  "mssql")                      icon="" ;;
+  "network-latency")            icon="󱘖" ;;
+  "network-throughput")         icon="󰈸" ;;
+  "optimize-serial-console")    icon="󰙜" ;;
   "powersave")                  icon="󰌪" ;;
   "throughput-performance")     icon="󰓅" ;;
-  "virtual-guest")              icon="" ;;
-  "virtual-host")               icon="" ;;
+  "virtual-guest")              icon="󱡗" ;;
+  "virtual-host")               icon="󱡘" ;;
   *)                            icon="unknown tuned profile!󰘚" ;;
 esac
 
