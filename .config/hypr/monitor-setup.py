@@ -601,6 +601,8 @@ def find_socket2() -> str | None:
 
 def run_daemon() -> None:
     """Run initial config, then listen for monitor hotplug events."""
+    startup_time: float = time.time()
+
     # Initial configuration
     monitors: list[dict] = get_connected_monitors()
     if monitors:
@@ -632,6 +634,11 @@ def run_daemon() -> None:
             continue
         event: str = line.split(">>", 1)[0]
         if event in ("monitoradded", "monitoraddedv2", "monitorremoved"):
+            # Hyprland emits monitoradded for existing monitors during startup,
+            # which would trigger a redundant restart and cause duplicate bars.
+            if time.time() - startup_time < 5.0:
+                print(f"Ignoring startup event: {line}")
+                continue
             print(f"Monitor event: {line}")
             time.sleep(0.5)  # debounce - let hardware settle
             monitors = get_connected_monitors()
