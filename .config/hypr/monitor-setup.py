@@ -495,6 +495,7 @@ def _auto_place_all(identified: dict[str, str], unidentified: list[dict]) -> Non
 # Substring match against hyprctl device names (lowercase).
 PHYSICALLY_SWAPPED_KEYBOARDS: list[str] = [
     "keychron-keychron-q2-max",
+    "keychron--keychron-link--keyboard",
 ]
 
 
