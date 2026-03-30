@@ -62,6 +62,7 @@ if [[ "$MYSYSTEM" = "OpenSuseDesktop" ]]; then
 fi
 
 if [[ "$MYSYSTEM" = "OpenSuseLaptop" ]]; then
+  find "$HOME/.hyprshot" -type f -delete 2>/dev/null
   if [[ -z "$DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
     start-hyprland
   fi
