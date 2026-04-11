@@ -11,6 +11,8 @@ export CXX="clang++"
 export PYTHONBREAKPOINT="pudb.set_trace"
 export GIT_EDITOR=$VIM
 export LIBVIRT_DEFAULT_URI='qemu:///system'
+export HYPRSHOT_DIR="$HOME/.hyprshot"
+mkdir -p "$HYPRSHOT_DIR"
 
 # Force NVIDIA EGL vendor — bypasses Mesa DRI2 failures on NVIDIA+Wayland (desktop only)
 [[ "$MYSYSTEM" == "OpenSuseDesktop" ]] && export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json

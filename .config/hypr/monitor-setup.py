@@ -365,6 +365,13 @@ def apply_monitor_config(monitors: list[dict]) -> None:
         print(f"Disabling monitor: {name}")
         hyprctl_keyword_monitor(f"{name},disable")
 
+    # If laptop eDP is present alongside any desktop monitor, disable eDP
+    desktop_keys: set[str] = {"dell_u2724d", "dell_u2723qe", "dell_s2719dgf"}
+    if "laptop_edp" in identified and (set(identified.keys()) & desktop_keys):
+        edp_name: str = identified.pop("laptop_edp")
+        print(f"Docked: disabling laptop eDP ({edp_name})")
+        hyprctl_keyword_monitor(f"{edp_name},disable")
+
     # Step 2: Try to match a known layout
     layout: KnownLayout | None = match_layout(set(identified.keys()))
 
@@ -484,11 +491,39 @@ def _auto_place_all(identified: dict[str, str], unidentified: list[dict]) -> Non
 # System Settings
 # ---------------------------------------------------------------------------
 
+# Keyboards that already have Caps and Escape physically swapped.
+# Substring match against hyprctl device names (lowercase).
+PHYSICALLY_SWAPPED_KEYBOARDS: list[str] = [
+    "keychron-keychron-q2-max",
+    "keychron--keychron-link--keyboard",
+]
+
+
+def has_physically_swapped_keyboard() -> bool:
+    """Check if any connected keyboard already has Caps/Esc physically swapped."""
+    try:
+        out = subprocess.check_output(
+            ["hyprctl", "-j", "devices"], encoding="utf-8", stderr=subprocess.DEVNULL
+        )
+        devices = json.loads(out)
+        for kb in devices.get("keyboards", []):
+            name: str = kb.get("name", "").lower()
+            if any(s in name for s in PHYSICALLY_SWAPPED_KEYBOARDS):
+                return True
+    except (subprocess.CalledProcessError, json.JSONDecodeError, FileNotFoundError):
+        pass
+    return False
+
+
 def apply_system_settings(has_laptop_panel: bool) -> None:
     """Apply system-specific non-monitor settings based on detected hardware."""
-    if has_laptop_panel:
-        print("Detected laptop panel - applying laptop settings")
+    if has_physically_swapped_keyboard():
+        print("Detected physically swapped keyboard - skipping caps:swapescape")
+        run_cmd(["hyprctl", "keyword", "input:kb_options", ""])
+    else:
+        print("No physically swapped keyboard - applying caps:swapescape")
         run_cmd(["hyprctl", "keyword", "input:kb_options", "caps:swapescape"])
+    if has_laptop_panel:
         run_cmd(["hyprctl", "keyword", "input:touchpad:scroll_factor", "0.5"])
 
 
@@ -601,6 +636,8 @@ def find_socket2() -> str | None:
 
 def run_daemon() -> None:
     """Run initial config, then listen for monitor hotplug events."""
+    startup_time: float = time.time()
+
     # Initial configuration
     monitors: list[dict] = get_connected_monitors()
     if monitors:
@@ -632,6 +669,11 @@ def run_daemon() -> None:
             continue
         event: str = line.split(">>", 1)[0]
         if event in ("monitoradded", "monitoraddedv2", "monitorremoved"):
+            # Hyprland emits monitoradded for existing monitors during startup,
+            # which would trigger a redundant restart and cause duplicate bars.
+            if time.time() - startup_time < 5.0:
+                print(f"Ignoring startup event: {line}")
+                continue
             print(f"Monitor event: {line}")
             time.sleep(0.5)  # debounce - let hardware settle
             monitors = get_connected_monitors()
