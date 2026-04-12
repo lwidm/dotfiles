@@ -25,72 +25,28 @@ import sys
 import time
 from dataclasses import dataclass
 
+import yaml
 
 # ---------------------------------------------------------------------------
-# Known Monitor Database
+# Data Classes
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class MonitorProfile:
     """Settings for a single known monitor model."""
+
     match_description: str  # substring to match in hyprctl "description" field
-    resolution: str         # e.g. "2560x1440@59.95"
+    resolution: str  # e.g. "2560x1440@59.95"
     scale: float = 1.0
-    transform: int = 0      # 0=none, 1=90, 2=180, 3=270
-    is_builtin: bool = False   # True for eDP-* built-in panels
+    transform: int = 0  # 0=none, 1=90, 2=180, 3=270
+    is_builtin: bool = False  # True for eDP-* built-in panels
 
-
-KNOWN_MONITORS: dict[str, MonitorProfile] = {
-    "dell_u2724d": MonitorProfile(
-        match_description="DELL U2724D 19GZJ04",  # left/daisy-chain monitor (serial-specific)
-        resolution="2560x1440@59.95",
-        scale=1.0,
-    ),
-    "dell_u2724d_right": MonitorProfile(
-        match_description="DELL U2724D 4J24KF4",  # right monitor (serial-specific)
-        resolution="2560x1440@59.95",
-        scale=1.0,
-        transform=3,   # 270 degrees (vertical orientation)
-    ),
-    "dell_u2723qe": MonitorProfile(
-        match_description="DELL U2723QE",
-        resolution="3840x2160@60",
-        scale=1.333333,  # 4/3: 3840x2160 → exact 2880x1620
-    ),
-    "dell_s2719dgf": MonitorProfile(
-        # No longer in any layout but kept in case it is reconnected
-        match_description="DELL S2719DGF",
-        resolution="2560x1440@60",
-        scale=1.0,
-        transform=3,   # 270 degrees
-    ),
-    "pikvm": MonitorProfile(
-        # TODO : Adjust this string after checking `hyprctl -j monitors` with PiKVM connected
-        match_description="PiKVM",
-        resolution="1920x1080@60",
-    ),
-    "laptop_edp": MonitorProfile(
-        match_description="__eDP__",  # sentinel; matched via special case
-        resolution="2880x1800@120",
-        scale=2.0,
-        is_builtin=True,
-    ),
-    "thinkvision_m14t": MonitorProfile(
-        # Adjust after checking actual description string
-        match_description="M14t",
-        resolution="1920x1080@60",
-    ),
-
-}
-
-
-# ---------------------------------------------------------------------------
-# Known Layouts Database
-# ---------------------------------------------------------------------------
 
 @dataclass
 class MonitorPlacement:
     """Position for one monitor within a layout."""
+
     profile_key: str
     position: str  # e.g. "2560x560"
 
@@ -98,12 +54,17 @@ class MonitorPlacement:
 @dataclass
 class KnownLayout:
     """A recognized combination of monitors with exact positions."""
+
     name: str
-    required: list[str]              # profile_keys that must ALL be present
+    required: list[str]  # profile_keys that must ALL be present
     placements: dict[str, MonitorPlacement]  # profile_key -> placement
-    primary_key: str           # which profile_key is primary
-    priority_order: list[str] = None # apply order: first gets workspace 1. defaults to placements order
-    disabled: list[str] = None       # profile_keys to explicitly disable in this layout
+    primary_key: str  # which profile_key is primary
+    priority_order: list[str] | None = (
+        None  # apply order: first gets workspace 1. defaults to placements order
+    )
+    disabled: list[str] | None = (
+        None  # profile_keys to explicitly disable in this layout
+    )
 
     def __post_init__(self):
         if self.priority_order is None:
@@ -112,151 +73,59 @@ class KnownLayout:
             self.disabled = []
 
 
-KNOWN_LAYOUTS: list[KnownLayout] = [
-    # Desktop: triple monitors + PiKVM (most specific first)
-    # Positions rebased so 4K (u2723qe) is at x=0; left monitor has negative x.
-    # Apply order matches priority_order so Hyprland assigns workspaces naturally.
-    # u2724d_right rotated 270°: logical 1440×2560 (tallest, reference for y-offsets)
-    # u2723qe: 1620 tall → y=(2560-1620)/2=470; u2724d: 1440 tall → y=(2560-1440)/2=560
-    # pikvm: 1080 tall → y=(2560-1080)/2=740; x=2880+1440=4320
-    KnownLayout(
-        name="desktop_triple_pikvm",
-        required=["dell_u2724d", "dell_u2723qe", "dell_u2724d_right", "pikvm"],
-        placements={
-            "dell_u2723qe":      MonitorPlacement("dell_u2723qe",      "0x470"),
-            "dell_u2724d":       MonitorPlacement("dell_u2724d",       "-2560x560"),
-            "dell_u2724d_right": MonitorPlacement("dell_u2724d_right", "2880x0"),
-            "pikvm":             MonitorPlacement("pikvm",             "4320x740"),
-        },
-        primary_key="dell_u2723qe",
-        priority_order=["dell_u2723qe", "dell_u2724d", "dell_u2724d_right", "pikvm"],
-    ),
-    # Desktop: triple monitors without PiKVM
-    KnownLayout(
-        name="desktop_triple",
-        required=["dell_u2724d", "dell_u2723qe", "dell_u2724d_right"],
-        placements={
-            "dell_u2723qe":      MonitorPlacement("dell_u2723qe",      "0x470"),
-            "dell_u2724d":       MonitorPlacement("dell_u2724d",       "-2560x560"),
-            "dell_u2724d_right": MonitorPlacement("dell_u2724d_right", "2880x0"),
-        },
-        primary_key="dell_u2723qe",
-        priority_order=["dell_u2723qe", "dell_u2724d", "dell_u2724d_right"],
-    ),
-    # Desktop: left + center only (no right monitor)
-    # Only two non-rotated monitors; u2723qe (1620) is tallest → u2724d y=(1620-1440)/2=90
-    KnownLayout(
-        name="desktop_left_center",
-        required=["dell_u2724d", "dell_u2723qe"],
-        placements={
-            "dell_u2723qe": MonitorPlacement("dell_u2723qe", "0x0"),
-            "dell_u2724d":  MonitorPlacement("dell_u2724d",  "-2560x90"),
-        },
-        primary_key="dell_u2723qe",
-        priority_order=["dell_u2723qe", "dell_u2724d"],
-    ),
-    # Desktop: center + right only (main 2-monitor desktop layout)
-    # u2724d_right rotated: 1440×2560; u2723qe y=(2560-1620)/2=470
-    KnownLayout(
-        name="desktop_center_right",
-        required=["dell_u2723qe", "dell_u2724d_right"],
-        placements={
-            "dell_u2723qe":      MonitorPlacement("dell_u2723qe",      "0x470"),
-            "dell_u2724d_right": MonitorPlacement("dell_u2724d_right", "2880x0"),
-        },
-        primary_key="dell_u2723qe",
-        priority_order=["dell_u2723qe", "dell_u2724d_right"],
-    ),
-    # Desktop: left + right only (no center 4K monitor)
-    # u2724d_right rotated: 1440×2560 (tallest); u2724d y=(2560-1440)/2=560
-    KnownLayout(
-        name="desktop_left_right",
-        required=["dell_u2724d", "dell_u2724d_right"],
-        placements={
-            "dell_u2724d":       MonitorPlacement("dell_u2724d",       "0x560"),
-            "dell_u2724d_right": MonitorPlacement("dell_u2724d_right", "2560x0"),
-        },
-        primary_key="dell_u2724d",
-        priority_order=["dell_u2724d", "dell_u2724d_right"],
-    ),
-    # Desktop: left monitor alone
-    KnownLayout(
-        name="desktop_left_only",
-        required=["dell_u2724d"],
-        placements={
-            "dell_u2724d": MonitorPlacement("dell_u2724d", "0x0"),
-        },
-        primary_key="dell_u2724d",
-    ),
-    # Desktop: center 4K monitor alone
-    KnownLayout(
-        name="desktop_center_only",
-        required=["dell_u2723qe"],
-        placements={
-            "dell_u2723qe": MonitorPlacement("dell_u2723qe", "0x0"),
-        },
-        primary_key="dell_u2723qe",
-    ),
-    # Desktop: right monitor alone
-    KnownLayout(
-        name="desktop_right_only",
-        required=["dell_u2724d_right"],
-        placements={
-            "dell_u2724d_right": MonitorPlacement("dell_u2724d_right", "0x0"),
-        },
-        primary_key="dell_u2724d_right",
-    ),
+# ---------------------------------------------------------------------------
+# YAML Loading
+# ---------------------------------------------------------------------------
 
-    # Laptop docked: 4K + daisy-chained left monitor + laptop screen on right
-    # u2723qe: 2880×1620 (tallest); u2724d y=(1620-1440)/2=90; laptop_edp y=(1620-900)/2=360
-    KnownLayout(
-        name="laptop_4k_left",
-        required=["laptop_edp", "dell_u2723qe", "dell_u2724d"],
-        placements={
-            "dell_u2723qe": MonitorPlacement("dell_u2723qe", "0x0"),
-            "dell_u2724d":  MonitorPlacement("dell_u2724d",  "-2560x90"),
-            "laptop_edp":   MonitorPlacement("laptop_edp",   "2880x360"),
-        },
-        primary_key="dell_u2723qe",
-        priority_order=["dell_u2723qe", "dell_u2724d", "laptop_edp"],
-        disabled=["laptop_edp"],
-    ),
-    # Laptop docked: 4K only (no daisy-chained left monitor)
-    # laptop_edp y=(1620-900)/2=360
-    KnownLayout(
-        name="laptop_4k",
-        required=["laptop_edp", "dell_u2723qe"],
-        placements={
-            "dell_u2723qe": MonitorPlacement("dell_u2723qe", "0x0"),
-            "laptop_edp":   MonitorPlacement("laptop_edp",   "2880x360"),
-        },
-        primary_key="dell_u2723qe",
-        priority_order=["dell_u2723qe", "laptop_edp"],
-        disabled=["laptop_edp"],
-    ),
-    # Laptop + ThinkVision M14t (M14t on the left)
-    KnownLayout(
-        name="laptop_thinkvision",
-        required=["laptop_edp", "thinkvision_m14t"],
-        placements={
-            "laptop_edp":       MonitorPlacement("laptop_edp",       "1920x90"),
-            "thinkvision_m14t": MonitorPlacement("thinkvision_m14t", "0x0"),
-        },
-        primary_key="laptop_edp",
-    ),
-    # Laptop alone
-    KnownLayout(
-        name="laptop_alone",
-        required=["laptop_edp"],
-        placements={
-            "laptop_edp": MonitorPlacement("laptop_edp", "0x0"),
-        },
-        primary_key="laptop_edp",
-    ),
-]
+SCRIPT_DIR: str = os.path.dirname(os.path.abspath(__file__))
 
-# Sorted by number of required monitors descending (most specific first)
-KNOWN_LAYOUTS.sort(key=lambda l: len(l.required), reverse=True)
+
+def _load_monitors(path: str) -> dict[str, MonitorProfile]:
+    data: dict
+    with open(path) as f:
+        data = yaml.safe_load(f)
+    return {
+        key: MonitorProfile(
+            match_description=attrs["match_description"],
+            resolution=attrs.get("resolution", ""),
+            scale=float(attrs.get("scale", 1.0)),
+            transform=int(attrs.get("transform", 0)),
+            is_builtin=bool(attrs.get("is_builtin", False)),
+        )
+        for key, attrs in data.items()
+    }
+
+
+def _load_layouts(path: str) -> list[KnownLayout]:
+    data: list[dict]
+    with open(path) as f:
+        data = yaml.safe_load(f)
+    layouts: list[KnownLayout] = []
+    for item in data:
+        placements = {
+            key: MonitorPlacement(key, str(pos))
+            for key, pos in item["placements"].items()
+        }
+        layouts.append(
+            KnownLayout(
+                name=item["name"],
+                required=item["required"],
+                placements=placements,
+                primary_key=item["primary_key"],
+                priority_order=item.get("priority_order"),
+                disabled=item.get("disabled"),
+            )
+        )
+    layouts.sort(key=lambda l: len(l.required), reverse=True)
+    return layouts
+
+
+KNOWN_MONITORS: dict[str, MonitorProfile] = _load_monitors(
+    os.path.join(SCRIPT_DIR, "monitors.yaml")
+)
+KNOWN_LAYOUTS: list[KnownLayout] = _load_layouts(
+    os.path.join(SCRIPT_DIR, "layouts.yaml")
+)
 
 
 # ---------------------------------------------------------------------------
@@ -279,9 +148,14 @@ def try_set_xrandr_primary(monitor_name: str):
     try:
         result = run_cmd(["xrandr", "--output", monitor_name, "--primary"])
         if result.returncode != 0:
-            print(f"WARNING: xrandr --primary failed for {monitor_name}", file=sys.stderr)
+            print(
+                f"WARNING: xrandr --primary failed for {monitor_name}", file=sys.stderr
+            )
     except FileNotFoundError:
-        print("WARNING: xrandr not found, skipping primary output setting", file=sys.stderr)
+        print(
+            "WARNING: xrandr not found, skipping primary output setting",
+            file=sys.stderr,
+        )
 
 
 def hyprctl_keyword_monitor(value: str):
@@ -294,7 +168,9 @@ def get_connected_monitors() -> list[dict]:
     for attempt in range(10):
         try:
             out = subprocess.check_output(
-                ["hyprctl", "-j", "monitors"], encoding="utf-8", stderr=subprocess.DEVNULL
+                ["hyprctl", "-j", "monitors"],
+                encoding="utf-8",
+                stderr=subprocess.DEVNULL,
             )
             return json.loads(out)
         except (subprocess.CalledProcessError, json.JSONDecodeError, FileNotFoundError):
@@ -319,9 +195,7 @@ def identify_monitor(mon: dict) -> str | None:
     for key, profile in KNOWN_MONITORS.items():
         if profile.is_builtin:
             continue  # handled above
-        if profile.match_description is None:
-            continue
-        if profile.match_description == "":
+        if not profile.match_description:
             continue
         if profile.match_description.lower() in combined.lower():
             return key
@@ -341,6 +215,7 @@ def match_layout(identified_keys: set[str]) -> KnownLayout | None:
 # ---------------------------------------------------------------------------
 # Resolution Parsing Helpers
 # ---------------------------------------------------------------------------
+
 
 def parse_resolution(res: str) -> tuple[int, int]:
     """Parse '2560x1440@59.95' into (2560, 1440)."""
@@ -364,6 +239,7 @@ def logical_width(profile: MonitorProfile) -> int:
 # Monitor Configuration
 # ---------------------------------------------------------------------------
 
+
 def apply_monitor_config(monitors: list[dict]) -> None:
     """Main logic: identify monitors, find layout, apply hyprctl commands."""
     if not monitors:
@@ -371,8 +247,8 @@ def apply_monitor_config(monitors: list[dict]) -> None:
         return
 
     # Step 1: Identify all connected monitors
-    identified: dict[str, str] = {}   # profile_key -> hyprctl name
-    unidentified: list[dict] = []     # monitors we don't recognize
+    identified: dict[str, str] = {}  # profile_key -> hyprctl name
+    unidentified: list[dict] = []  # monitors we don't recognize
 
     mon: dict
     for mon in monitors:
@@ -380,14 +256,20 @@ def apply_monitor_config(monitors: list[dict]) -> None:
         if key is not None:
             # Handle duplicate models: first one wins, rest are unidentified
             if key in identified:
-                print(f"WARNING: Duplicate monitor model '{key}' detected "
-                      f"({mon['name']}), treating as unknown", file=sys.stderr)
+                print(
+                    f"WARNING: Duplicate monitor model '{key}' detected "
+                    f"({mon['name']}), treating as unknown",
+                    file=sys.stderr,
+                )
                 unidentified.append(mon)
                 continue
             identified[key] = mon["name"]
         else:
-            print(f"INFO: Unrecognized monitor: {mon['name']} "
-                  f"(desc: {mon.get('description', 'N/A')})", file=sys.stderr)
+            print(
+                f"INFO: Unrecognized monitor: {mon['name']} "
+                f"(desc: {mon.get('description', 'N/A')})",
+                file=sys.stderr,
+            )
             unidentified.append(mon)
 
     # Step 2: Try to match a known layout
@@ -396,6 +278,8 @@ def apply_monitor_config(monitors: list[dict]) -> None:
     if layout is not None:
         print(f"Matched layout: {layout.name}")
         # Disable any monitors the layout explicitly marks as disabled
+        if layout.disabled is None:
+            raise ValueError(f'Disabled list in layout "{layout.name}" returend None')
         for profile_key in layout.disabled:
             if profile_key in identified:
                 hypr_name: str = identified.pop(profile_key)
@@ -434,28 +318,32 @@ def apply_monitor_config(monitors: list[dict]) -> None:
     print("Monitor configuration complete.")
 
 
-
 def _apply_known_layout(layout: KnownLayout, identified: dict[str, str]) -> None:
     """Apply exact positions from a known layout, in priority_order so that
     Hyprland assigns workspace 1 to the first-initialized (highest-priority) monitor."""
     profile_key: str
     placement: MonitorPlacement
+    if layout.priority_order is None:
+        raise ValueError(f'Priority order in layout "{layout.name}" returend None')
     for profile_key in layout.priority_order:
         if profile_key not in identified:
             continue
         placement = layout.placements[profile_key]
         hypr_name: str = identified[profile_key]
         profile: MonitorProfile = KNOWN_MONITORS[profile_key]
-        cmd = f"{hypr_name},{profile.resolution},{placement.position},{profile.scale}"
+        cmd: str = f"{hypr_name},{profile.resolution},{placement.position},{profile.scale}"
         if profile.transform:
             cmd += f",transform,{profile.transform}"
-        print(f"  {hypr_name}: {profile.resolution} @ {placement.position} "
-              f"scale={profile.scale} transform={profile.transform}")
+        print(
+            f"  {hypr_name}: {profile.resolution} @ {placement.position} "
+            f"scale={profile.scale} transform={profile.transform}"
+        )
         hyprctl_keyword_monitor(cmd)
 
 
-def _auto_place_extra(unidentified: list[dict], layout: KnownLayout,
-                      identified: dict[str, str]):
+def _auto_place_extra(
+    unidentified: list[dict], layout: KnownLayout, identified: dict[str, str]
+):
     """Auto-place monitors that aren't part of the matched layout."""
     # Find the rightmost edge of the layout
     max_x: int = 0
@@ -508,7 +396,6 @@ def _auto_place_all(identified: dict[str, str], unidentified: list[dict]) -> Non
         print(f"  {name}: preferred @ {pos}")
         hyprctl_keyword_monitor(f"{name},preferred,{pos},1")
         x_offset += mon.get("width", 1920)
-
 
 
 # ---------------------------------------------------------------------------
@@ -566,7 +453,7 @@ def generate_eww_bars(monitor_names: list[str], primary_name: str | None) -> Non
 
     windows: list[tuple[str, str]] = []
     for i, mon_name in enumerate(monitor_names):
-        is_primary: bool = (mon_name == primary_name)
+        is_primary: bool = mon_name == primary_name
         bar_id: str = f"bar{i}"
 
         widget: str
@@ -621,7 +508,8 @@ def restart_eww(monitor_names: list[str]) -> None:
     # Start daemon
     subprocess.Popen(
         ["setsid", "eww", "daemon"],
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
 
     # Wait for daemon to be ready
@@ -637,7 +525,8 @@ def restart_eww(monitor_names: list[str]) -> None:
     for bar_id in bar_ids:
         subprocess.run(
             ["eww", "open", bar_id],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
     print(f"Opened EWW bars: {', '.join(bar_ids)}")
 
@@ -645,6 +534,7 @@ def restart_eww(monitor_names: list[str]) -> None:
 # ---------------------------------------------------------------------------
 # Hotplug Daemon
 # ---------------------------------------------------------------------------
+
 
 def find_socket2() -> str | None:
     """Find the Hyprland IPC socket2 path."""
@@ -670,8 +560,10 @@ def run_daemon() -> None:
     # Find and connect to IPC socket
     sock_path: str | None = find_socket2()
     if sock_path is None:
-        print("WARNING: Could not find Hyprland socket2, falling back to polling",
-              file=sys.stderr)
+        print(
+            "WARNING: Could not find Hyprland socket2, falling back to polling",
+            file=sys.stderr,
+        )
         poll_daemon()
         return
 
@@ -681,8 +573,10 @@ def run_daemon() -> None:
         s.connect(sock_path)
         f = s.makefile("r", encoding="utf-8", newline="\n")
     except OSError as e:
-        print(f"WARNING: Could not connect to socket: {e}, falling back to polling",
-              file=sys.stderr)
+        print(
+            f"WARNING: Could not connect to socket: {e}, falling back to polling",
+            file=sys.stderr,
+        )
         poll_daemon()
         return
 
@@ -710,7 +604,7 @@ def poll_daemon(interval: float = 5.0) -> None:
     last_names: set[str] = set()
     while True:
         monitors: list[dict] = get_connected_monitors()
-        current_names: set[str] = {m["name"] for m in monitors} # type: ignore
+        current_names: set[str] = {m["name"] for m in monitors}  # type: ignore
         if current_names != last_names:
             apply_monitor_config(monitors)
             last_names = current_names
@@ -720,6 +614,7 @@ def poll_daemon(interval: float = 5.0) -> None:
 # ---------------------------------------------------------------------------
 # Dump Monitors (debugging)
 # ---------------------------------------------------------------------------
+
 
 def dump_monitors() -> None:
     """Print all detected monitor info as formatted JSON."""
@@ -745,26 +640,43 @@ def dump_monitors() -> None:
         if key:
             profile = KNOWN_MONITORS.get(key)
             if profile:
-                print(f"  profile:     {profile.resolution}, scale={profile.scale}, "
-                      f"transform={profile.transform}")
+                print(
+                    f"  profile:     {profile.resolution}, scale={profile.scale}, "
+                    f"transform={profile.transform}"
+                )
 
 
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
     global DRY_RUN
 
-    parser = argparse.ArgumentParser(description="Auto-detect and configure Hyprland monitors")
-    parser.add_argument("--daemon", action="store_true",
-                        help="Run one-shot config then listen for hotplug events")
-    parser.add_argument("--eww-only", action="store_true",
-                        help="Only regenerate EWW bars (no monitor reconfiguration)")
-    parser.add_argument("--dry-run", action="store_true",
-                        help="Print what would be done without executing")
-    parser.add_argument("--dump-monitors", action="store_true",
-                        help="Print detected monitor info for debugging")
+    parser = argparse.ArgumentParser(
+        description="Auto-detect and configure Hyprland monitors"
+    )
+    parser.add_argument(
+        "--daemon",
+        action="store_true",
+        help="Run one-shot config then listen for hotplug events",
+    )
+    parser.add_argument(
+        "--eww-only",
+        action="store_true",
+        help="Only regenerate EWW bars (no monitor reconfiguration)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print what would be done without executing",
+    )
+    parser.add_argument(
+        "--dump-monitors",
+        action="store_true",
+        help="Print detected monitor info for debugging",
+    )
     args = parser.parse_args()
 
     DRY_RUN = args.dry_run

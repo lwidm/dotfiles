@@ -1,0 +1,32 @@
+dell_u2724d:
+  match_description: "DELL U2724D 19GZJ04"  # left/daisy-chain monitor (serial-specific)
+  resolution: "2560x1440@59.95"
+
+dell_u2724d_right:
+  match_description: "DELL U2724D 4J24KF4"  # right monitor (serial-specific)
+  resolution: "2560x1440@59.95"
+  transform: 3  # 270 degrees (vertical orientation)
+
+dell_u2723qe:
+  match_description: "DELL U2723QE"
+  resolution: "3840x2160@60"
+  scale: 1.333333  # 4/3: 3840x2160 -> exact 2880x1620
+
+dell_s2719dgf:
+  match_description: "DELL S2719DGF"  # no longer in any layout, kept for reconnection
+  resolution: "2560x1440@60"
+  transform: 3  # 270 degrees
+
+pikvm:
+  match_description: "PiKVM"  # TODO: verify description after connecting PiKVM
+  resolution: "1920x1080@60"
+
+laptop_edp:
+  match_description: "__eDP__"  # sentinel; matched via special case in code
+  resolution: "2880x1800@120"
+  scale: 2.0
+  is_builtin: true
+
+thinkvision_m14t:
+  match_description: "M14t"  # TODO: verify description after connecting ThinkVision
+  resolution: "1920x1080@60"

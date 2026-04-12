@@ -1,0 +1,100 @@
+# y-offsets reference: u2724d_right rotated 270deg = logical 1440x2560 (tallest in desktop triple)
+# u2723qe: 1620 tall -> y=(2560-1620)/2=470; u2724d: 1440 tall -> y=(2560-1440)/2=560
+# pikvm:   1080 tall -> y=(2560-1080)/2=740; x=2880+1440=4320
+
+- name: desktop_triple_pikvm
+  required: [dell_u2724d, dell_u2723qe, dell_u2724d_right, pikvm]
+  placements:
+    dell_u2723qe:      "0x470"
+    dell_u2724d:       "-2560x560"
+    dell_u2724d_right: "2880x0"
+    pikvm:             "4320x740"
+  primary_key: dell_u2723qe
+  priority_order: [dell_u2723qe, dell_u2724d, dell_u2724d_right, pikvm]
+
+- name: desktop_triple
+  required: [dell_u2724d, dell_u2723qe, dell_u2724d_right]
+  placements:
+    dell_u2723qe:      "0x470"
+    dell_u2724d:       "-2560x560"
+    dell_u2724d_right: "2880x0"
+  primary_key: dell_u2723qe
+  priority_order: [dell_u2723qe, dell_u2724d, dell_u2724d_right]
+
+# Only two non-rotated monitors; u2723qe (1620) is tallest -> u2724d y=(1620-1440)/2=90
+- name: desktop_left_center
+  required: [dell_u2724d, dell_u2723qe]
+  placements:
+    dell_u2723qe: "0x0"
+    dell_u2724d:  "-2560x90"
+  primary_key: dell_u2723qe
+  priority_order: [dell_u2723qe, dell_u2724d]
+
+# u2724d_right rotated: 1440x2560; u2723qe y=(2560-1620)/2=470
+- name: desktop_center_right
+  required: [dell_u2723qe, dell_u2724d_right]
+  placements:
+    dell_u2723qe:      "0x470"
+    dell_u2724d_right: "2880x0"
+  primary_key: dell_u2723qe
+  priority_order: [dell_u2723qe, dell_u2724d_right]
+
+# u2724d_right rotated: 1440x2560 (tallest); u2724d y=(2560-1440)/2=560
+- name: desktop_left_right
+  required: [dell_u2724d, dell_u2724d_right]
+  placements:
+    dell_u2724d:       "0x560"
+    dell_u2724d_right: "2560x0"
+  primary_key: dell_u2724d
+  priority_order: [dell_u2724d, dell_u2724d_right]
+
+- name: desktop_left_only
+  required: [dell_u2724d]
+  placements:
+    dell_u2724d: "0x0"
+  primary_key: dell_u2724d
+
+- name: desktop_center_only
+  required: [dell_u2723qe]
+  placements:
+    dell_u2723qe: "0x0"
+  primary_key: dell_u2723qe
+
+- name: desktop_right_only
+  required: [dell_u2724d_right]
+  placements:
+    dell_u2724d_right: "0x0"
+  primary_key: dell_u2724d_right
+
+# u2723qe: 2880x1620 (tallest); u2724d y=(1620-1440)/2=90; laptop_edp y=(1620-900)/2=360
+- name: laptop_4k_left
+  required: [laptop_edp, dell_u2723qe, dell_u2724d]
+  placements:
+    dell_u2723qe: "0x0"
+    dell_u2724d:  "-2560x90"
+    laptop_edp:   "2880x360"
+  primary_key: dell_u2723qe
+  priority_order: [dell_u2723qe, dell_u2724d, laptop_edp]
+  disabled: [laptop_edp]
+
+- name: laptop_4k
+  required: [laptop_edp, dell_u2723qe]
+  placements:
+    dell_u2723qe: "0x0"
+    laptop_edp:   "2880x360"
+  primary_key: dell_u2723qe
+  priority_order: [dell_u2723qe, laptop_edp]
+  disabled: [laptop_edp]
+
+- name: laptop_thinkvision
+  required: [laptop_edp, thinkvision_m14t]
+  placements:
+    laptop_edp:       "1920x90"
+    thinkvision_m14t: "0x0"
+  primary_key: laptop_edp
+
+- name: laptop_alone
+  required: [laptop_edp]
+  placements:
+    laptop_edp: "0x0"
+  primary_key: laptop_edp
