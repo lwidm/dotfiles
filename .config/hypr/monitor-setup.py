@@ -501,9 +501,12 @@ def restart_eww(monitor_names: list[str]) -> None:
 
     bar_ids = [f"bar{i}" for i in range(len(monitor_names))]
 
-    # Kill existing eww
-    subprocess.run(["pkill", "-x", "eww"], capture_output=True)
-    time.sleep(0.1)
+    # Kill all existing eww instances and wait for them to fully exit
+    subprocess.run(["pkill", "-9", "-x", "eww"], capture_output=True)
+    for _ in range(50):
+        if subprocess.run(["pgrep", "-x", "eww"], capture_output=True).returncode != 0:
+            break
+        time.sleep(0.1)
 
     # Start daemon
     subprocess.Popen(
