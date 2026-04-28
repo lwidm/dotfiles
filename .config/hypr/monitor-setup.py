@@ -65,12 +65,19 @@ class KnownLayout:
     disabled: list[str] | None = (
         None  # profile_keys to explicitly disable in this layout
     )
+    # Per-layout overrides for the default monitor profile. Each entry maps a
+    # profile_key to a dict that may contain "resolution", "scale", "transform".
+    # Used when a layout needs different settings than the monitor's default
+    # (e.g. dropping resolution to fit shared USB-C DP bandwidth).
+    overrides: dict[str, dict] | None = None
 
     def __post_init__(self):
         if self.priority_order is None:
             self.priority_order = list(self.placements.keys())
         if self.disabled is None:
             self.disabled = []
+        if self.overrides is None:
+            self.overrides = {}
 
 
 # ---------------------------------------------------------------------------
@@ -114,6 +121,7 @@ def _load_layouts(path: str) -> list[KnownLayout]:
                 primary_key=item["primary_key"],
                 priority_order=item.get("priority_order"),
                 disabled=item.get("disabled"),
+                overrides=item.get("overrides"),
             )
         )
     layouts.sort(key=lambda l: len(l.required), reverse=True)
@@ -164,11 +172,16 @@ def hyprctl_keyword_monitor(value: str):
 
 
 def get_connected_monitors() -> list[dict]:
-    """Return list of monitor dicts from hyprctl -j monitors."""
+    """Return list of monitor dicts from hyprctl -j monitors all.
+
+    Uses `monitors all` (not just `monitors`) so that monitors disabled by a
+    previous layout (e.g. laptop_edp under laptop_4k_left) are still visible
+    to the matcher — otherwise the layout that disabled them stops matching
+    on subsequent runs and a less-specific layout takes over."""
     for attempt in range(10):
         try:
             out = subprocess.check_output(
-                ["hyprctl", "-j", "monitors"],
+                ["hyprctl", "-j", "monitors", "all"],
                 encoding="utf-8",
                 stderr=subprocess.DEVNULL,
             )
@@ -331,12 +344,17 @@ def _apply_known_layout(layout: KnownLayout, identified: dict[str, str]) -> None
         placement = layout.placements[profile_key]
         hypr_name: str = identified[profile_key]
         profile: MonitorProfile = KNOWN_MONITORS[profile_key]
-        cmd: str = f"{hypr_name},{profile.resolution},{placement.position},{profile.scale}"
-        if profile.transform:
-            cmd += f",transform,{profile.transform}"
+        ov: dict = (layout.overrides or {}).get(profile_key, {})
+        resolution: str = ov.get("resolution", profile.resolution)
+        scale: float = float(ov.get("scale", profile.scale))
+        transform: int = int(ov.get("transform", profile.transform))
+        cmd: str = f"{hypr_name},{resolution},{placement.position},{scale}"
+        if transform:
+            cmd += f",transform,{transform}"
         print(
-            f"  {hypr_name}: {profile.resolution} @ {placement.position} "
-            f"scale={profile.scale} transform={profile.transform}"
+            f"  {hypr_name}: {resolution} @ {placement.position} "
+            f"scale={scale} transform={transform}"
+            + (" (override)" if ov else "")
         )
         hyprctl_keyword_monitor(cmd)
 

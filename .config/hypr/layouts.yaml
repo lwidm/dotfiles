@@ -66,13 +66,20 @@
     dell_u2724d_right: "0x0"
   primary_key: dell_u2724d_right
 
-# u2723qe: 2880x1620 (tallest); u2724d y=(1620-1440)/2=90; laptop_edp y=(1620-900)/2=360
+# u2723qe forced to 2560x1440 here: laptop USB-C DP can't carry 4K + 2.5K
+# simultaneously (drops U2724D to 2048x1080). Both monitors at 1440 height -> y=0.
+# laptop_edp is disabled in this layout but placement kept for completeness:
+# logical 1440x900, x=2560 (right of u2723qe at scale 1.0), y=(1440-900)/2=270
 - name: laptop_4k_left
   required: [laptop_edp, dell_u2723qe, dell_u2724d]
   placements:
     dell_u2723qe: "0x0"
-    dell_u2724d:  "-2560x90"
-    laptop_edp:   "2880x360"
+    dell_u2724d:  "-2560x0"
+    laptop_edp:   "2560x270"
+  overrides:
+    dell_u2723qe:
+      resolution: "2560x1440@60"
+      scale: 1.0
   primary_key: dell_u2723qe
   priority_order: [dell_u2723qe, dell_u2724d, laptop_edp]
   disabled: [laptop_edp]
