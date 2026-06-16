@@ -570,6 +570,147 @@ calendar {
 .time_container {
 }
 
+/** --------- performance / system stats ---------- **/
+// window: same look as the bar but a touch more opaque
+$perf-bg: rgba(28, 28, 28, 0.94);
+
+// `* { all: unset }` resets widget nodes but NOT the toplevel window node,
+// so the GTK theme still paints a border/shadow there -> a second outer
+// ring around the floating popup. Neutralise the window chrome itself.
+window, decoration, .background {
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+.performance {
+  background-color: $perf-bg;
+  border-radius: $border-radius;
+  border-style: solid;
+  border-width: 1;
+  border-color: $green;
+  padding: 12px 14px 10px 14px;
+  margin: $gap;
+}
+
+.perf_header {
+  font-family: "Share Tech Mono";
+  font-size: 11px;
+  font-weight: bold;
+  color: $lightgrey;
+  margin: 0px 0px 8px 2px;
+}
+
+.perf_row {
+  margin: 2px 0px;
+}
+
+.perf_icon {
+  font-size: 14px;
+  margin-right: 8px;
+  min-width: 18px;
+}
+
+.perf_label {
+  font-family: "Share Tech Mono";
+  font-size: 12px;
+  color: $white;
+  min-width: 58px;
+}
+
+.perf_value {
+  font-family: "Share Tech Mono";
+  font-size: 11px;
+  color: $white;
+  margin-right: 10px;
+  min-width: 36px;
+}
+
+// indented, quieter sub-group (same colour as the network module)
+.perf_info {
+  margin: 0px 0px 5px 26px;
+}
+
+.perf_info_text {
+  font-family: "Share Tech Mono";
+  font-size: 9px;
+  color: #a1bdce;
+}
+
+// per-metric icon colours
+.perf_row.cpu     .perf_icon { color: $blue; }
+.perf_row.ram     .perf_icon { color: $orange; }
+.perf_row.gpu     .perf_icon { color: $purple; }
+.perf_row.vram    .perf_icon { color: $teal; }
+.perf_row.battery .perf_icon { color: $green; }
+
+// read-only sliders -- mirror the .volbar / .brightbar styling
+.perfbar {
+  min-height: 8px;
+  min-width: 130px;
+  padding: 0px 6px;
+}
+
+.perfbar trough {
+  border-radius: 2px;
+  border-color: #000000;
+  border-width: 2px;
+  background-color: rgba(99,99,99,0.5);
+}
+
+.perfbar trough highlight {
+  border-radius: 2px;
+}
+
+.perfbar trough slider {
+  border-radius: 50%;
+  min-height: 10px;
+  min-width: 10px;
+  margin: -3px;
+}
+
+@mixin perf_slider($c1, $c2) {
+  trough highlight {
+    color: $c2;
+    background-image: linear-gradient(to right, $c1, $c2);
+  }
+  trough slider {
+    background-color: $c2;
+  }
+}
+
+.perfbar.cpu_bar     { @include perf_slider(#6f93d6, $blue); }
+.perfbar.ram_bar     { @include perf_slider(#d4c060, $orange); }
+.perfbar.gpu_bar     { @include perf_slider(#7a4ed6, $purple); }
+.perfbar.vram_bar    { @include perf_slider(#1fb0c4, $teal); }
+.perfbar.battery_bar { @include perf_slider(#3da885, $green); }
+
+.perf_footer {
+  margin-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 6px;
+}
+
+.perf_footer_item {
+  font-family: "Share Tech Mono";
+  font-size: 10px;
+  color: $lightgrey;
+}
+
+// gap between a footer icon and its value
+.perf_footer_icon {
+  margin-right: 7px;
+}
+
+// clickable battery / memory modules
+.battery_module_evt, .memory_module_evt {
+  border-radius: 6px;
+  transition: background-color 120ms ease;
+}
+.battery_module_evt:hover, .memory_module_evt:hover {
+  background-color: rgba(255,255,255,0.04);
+}
+
 // --------- notifications ----------
 
 

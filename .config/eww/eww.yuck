@@ -36,6 +36,14 @@
 (defpoll mic_percent :interval "1s" "pactl get-source-volume @DEFAULT_SOURCE@ | grep -oE '[0-9]+%' | head -1 | tr -d '%'")
 (defpoll brightness_percent :interval "1s" "brightnessctl -m | cut -d, -f4 | tr -d '%'")
 
+;; performance / system-stats window (only polls while the window is open)
+(defvar perf_open false)
+(defpoll perf_json
+  :interval "2s"
+  :run-while perf_open
+  :initial '{"cpu_name":"…","cpu_perc":0,"cpu_freq":0,"cpu_freq_max":0,"cpu_temp":0,"cpu_cores":0,"load":"0","gpus":[],"swap_used":0,"swap_total":0,"swap_perc":0,"disk_perc":0,"disk_used":"?","disk_total":"?","uptime":"?"}'
+  "bash ~/.config/eww/scripts/performance.sh")
+
 (defpoll song_name :interval "2s"         "bash ~/.config/eww/scripts/music_info.sh --song")
 (defpoll song_artist_name :interval "2s"  "bash ~/.config/eww/scripts/music_info.sh --artist")
 (defpoll current_status :interval "1s"    "bash ~/.config/eww/scripts/music_info.sh --time")
@@ -73,7 +81,13 @@
         :visible "true"
         :width "150"))
 
+;; toggle command for the performance window, reused by the clickable modules
+(defvar perf_toggle "if [ \"$(eww get perf_open)\" = \"true\" ]; then eww close performance && eww update perf_open=false; else eww open performance && eww update perf_open=true; fi")
+
 (defwidget battery_module []
+  (eventbox :class "battery_module_evt"
+            :cursor "pointer"
+            :onclick perf_toggle
   (box :class "battery_module"
        :vexpand "false"
        :hexpand "false"
@@ -87,6 +101,8 @@
     (label :class "icon ac_icon" :text "󰚥"
            :visible {has_battery == "false"})
     (eventbox :hexpand false
+                :cursor "pointer"
+                :onclick perf_toggle
                 :onhover "${EWW_CMD} update tuned_hovered=true"
                 :onhoverlost "${EWW_CMD} update tuned_hovered=false"
         (box :orientation "h" :valign "center" :hexpand false :space-evenly false :spacing 0
@@ -104,12 +120,15 @@
         ;;         :show_truncated false
         ;;         :wrap false
                 ;; "")
-      ))))
+      )))))
 
 (defwidget memory_module []
+  (eventbox :class "memory_module_evt"
+            :cursor "pointer"
+            :onclick perf_toggle
   (box  :class "memory_module"
         :vexpand "false"
-        :hexpand "false" 
+        :hexpand "false"
     (label :class "icon" :text "󰍛")
     (box :orientation "h" :halign "center" :valign "center"
       (circular-progress  :class "progress_circle"
@@ -122,7 +141,7 @@
         ;;         :show_truncated false
         ;;         :wrap false
         ;;         "")
-      ))))
+      )))))
 
 ;; adjust paths if you put scripts elsewhere
 (defvar seconds_start_script "$~/.config/eww/scripts/eww_seconds_start.sh")
@@ -491,6 +510,99 @@
     :width "290px"
     :height "120px")
   (system_module))
+
+
+;; --------- performance / system stats ---------
+
+;; a read-only labelled slider row (slider mirrors brightness/volume styling)
+(defwidget perf_bar [metric icon label valtext perc]
+  (box :class "perf_row ${metric}"
+       :orientation "h"
+       :space-evenly false
+       :valign "center"
+    (label :class "perf_icon" :text icon)
+    (label :class "perf_label" :text label)
+    (box :hexpand true :halign "end" :space-evenly false :valign "center"
+      (label :class "perf_value" :text valtext)
+      (scale :class "perfbar ${metric}_bar"
+             :value perc
+             :min 0
+             :max 100
+             :active false
+             :orientation "horizontal"
+             :valign "center"))))
+
+;; an indented, quieter info sub-row (subgroup of the row above it)
+(defwidget perf_info [text]
+  (box :class "perf_info" :orientation "h" :halign "start" :space-evenly false
+    (label :class "perf_info_text" :text text :halign "start" :wrap false :limit-width 60)))
+
+;; a footer stat: icon + value with a little gap between them
+(defwidget perf_foot [icon value]
+  (box :class "perf_footer_item" :orientation "h" :space-evenly false :valign "center"
+    (label :class "perf_footer_icon" :text icon)
+    (label :class "perf_footer_val"  :text value)))
+
+(defwidget performance_module []
+  (box :class "performance"
+       :orientation "v"
+       :space-evenly false
+       :spacing 0
+    (label :class "perf_header" :text "system" :halign "start")
+
+    ;; CPU
+    (perf_bar :metric "cpu" :icon "󰻠" :label "CPU"
+              :valtext "${perf_json.cpu_perc}%" :perc {perf_json.cpu_perc})
+    (perf_info :text "${perf_json.cpu_name}")
+    (perf_info :text "${perf_json.cpu_freq} / ${perf_json.cpu_freq_max} MHz   ${perf_json.cpu_temp}°C   ${perf_json.cpu_cores} cores   load ${perf_json.load}")
+
+    ;; RAM
+    (perf_bar :metric "ram" :icon "󰍛" :label "RAM"
+              :valtext "${round(EWW_RAM.used_mem_perc,0)}%" :perc {EWW_RAM.used_mem_perc})
+    (perf_info :text "${round((EWW_RAM.used_mem / 1024 / 1024),0)} / ${round((EWW_RAM.total_mem / 1024 / 1024),0)} MB used")
+
+    ;; GPU(s) -- one block per detected card (iGPU, dGPU, ...)
+    ;; wrapped in a static box so the for-loop's children stay in position
+    ;; (otherwise eww appends them after the footer)
+    (box :orientation "v" :space-evenly false :spacing 0
+      (for gpu in {perf_json.gpus}
+        (box :orientation "v" :space-evenly false :spacing 0
+          (perf_bar :metric "gpu" :icon "󰢮" :label "GPU"
+                    :valtext "${gpu.perc}%" :perc {gpu.perc})
+          (perf_info :text "${gpu.name}")
+          (perf_info :text {gpu.temp > 0
+                             ? "${gpu.freq} / ${gpu.freq_max} MHz    ${gpu.temp}°C"
+                             : "${gpu.freq} / ${gpu.freq_max} MHz"})
+          ;; Video memory (shared with system RAM on an iGPU)
+          (perf_bar :metric "vram" :icon "󰍹" :label "VRAM"
+                    :valtext "${gpu.vram_perc}%" :perc {gpu.vram_perc})
+          (perf_info :text "${gpu.vram_used} / ${gpu.vram_total} MB${gpu.shared ? "  (shared)" : ""}"))))
+
+    ;; Battery (laptop only)
+    (box :visible {has_battery == "true"} :orientation "v" :space-evenly false :spacing 0
+      (perf_bar :metric "battery" :icon "${battery_json.icon}" :label "Battery"
+                :valtext "${battery_json.percent}%" :perc {battery_json.percent})
+      (perf_info :text "mode  ${tuned_json.profile}"))
+
+    ;; footer: misc stats (swap hidden when the machine has none)
+    (box :class "perf_footer" :orientation "h" :space-evenly true
+      (perf_foot :icon "󰋊" :value "${perf_json.disk_used}/${perf_json.disk_total}")
+      (box :visible {perf_json.swap_total > 0} :space-evenly false
+        (perf_foot :icon "󰓡" :value "${perf_json.swap_used}/${perf_json.swap_total}M"))
+      (perf_foot :icon "󰅐" :value "${perf_json.uptime}"))))
+
+(defwindow performance
+  :stacking "fg"
+  :focusable "false"
+  :screen 1
+  :monitor "eDP-1"
+  :geometry (geometry
+    :x "0.5%"
+    :y "1%"
+    :anchor "bottom right"
+    :width "360px"
+    :height "10px")
+  (performance_module))
 
 
 ;; --------- Notifications ----------
