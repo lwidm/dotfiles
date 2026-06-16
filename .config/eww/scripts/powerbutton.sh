@@ -22,7 +22,7 @@ AGE=$(( NOW - TS ))
 
 if [[ -f "$FLAG" && $AGE -le $GRACE ]]; then
   # recent reveal -> treat click as confirmation: shutdown
-  systemctl /usr/bin/hyprlock
+  systemctl poweroff
   exit $?
 else
   # not recently revealed -> reveal, write timestamp and auto-hide after GRACE

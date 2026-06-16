@@ -226,26 +226,23 @@
           :spacing "3"
           :vexpand "true"
           :valign "center"
-      (button :onclick "~/.config/eww/scripts/pop audio"
+      (button :onclick "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
               :class "volume_icon" "${volume_icon}")
       (revealer :transition "slideleft"
                 :reveal vol_reveal
                 :duration "350ms"
                 :vexpand "true"
                 :valign "center"
-          (progress :class "volbar"
-                    :value volume_percent
-                    :orientation "horizontal"
-                    :vexpand "true"
-                    :valign "center"
+          (scale :class "volbar"
+                 :value volume_percent
+                 :min 0
+                 :max 100
+                 :orientation "horizontal"
+                 :tooltip "${volume_percent}%"
+                 :onchange "wpctl set-volume @DEFAULT_AUDIO_SINK@ $(printf '%.0f' {})%"
+                 :vexpand "true"
+                 :valign "center"
 		    )))))
-        ;; (scale :class "volbar"
-        ;;       :value volume_percent
-        ;;       :orientation "h"
-        ;;       :tooltip "${volume_percent}"
-        ;;       :max 100
-        ;;       :min 0
-        ;;       :onchange "pactl set-sink-volume @DEFAULT_SINK@ {}%")))))
 
 (defvar bright_reveal "false")
 (defwidget brightness_module []
@@ -265,19 +262,16 @@
                 :duration "350ms"
                 :vexpand "true"
                 :valign "center"
-          (progress :class "brightbar"
-                    :value brightness_percent
-                    :orientation "horizontal"
-                    :vexpand "true"
-                    :valign "center"
+          (scale :class "brightbar"
+                 :value brightness_percent
+                 :min 1
+                 :max 100
+                 :orientation "horizontal"
+                 :tooltip "${brightness_percent}%"
+                 :onchange "brightnessctl set $(printf '%.0f' {})%"
+                 :vexpand "true"
+                 :valign "center"
 		    )))))
-	  ;; (scale  :class "brightbar"
-		 ;;      :value "50"
-		 ;;      :orientation "h"
-		 ;;      :tooltip "${brightness_percent}%"
-		 ;;      :max 100
-		 ;;      :min 0
-		 ;;      :onchange "brightnessctl set {}%" )))))
 
 
 (deflisten workspaces :initial '{}' "~/.config/eww/scripts/hyprland-workspaces.py")

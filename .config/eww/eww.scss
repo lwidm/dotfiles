@@ -257,6 +257,8 @@ tooltip label {
 
 .volbar {
   min-height: 8px;
+  min-width: 100px;
+  padding: 0px 6px;
 }
 
 .volbar trough {
@@ -267,10 +269,19 @@ tooltip label {
 }
 
 /* Filled portion (highlight) */
-.volbar trough progress {
+.volbar trough highlight {
   border-radius: 2px;
   color: #afcee0;
   background-image: linear-gradient(to right, #afcee0 30%, #a1bdce 50%, #77a5bf 100% *50);
+}
+
+/* Draggable knob */
+.volbar trough slider {
+  background-color: #afcee0;
+  border-radius: 50%;
+  min-height: 10px;
+  min-width: 10px;
+  margin: -3px;
 }
 
 .volume_icon {
@@ -281,6 +292,8 @@ tooltip label {
 
 .brightbar {
   min-height: 8px;
+  min-width: 100px;
+  padding: 0px 6px;
 }
 
 .brightbar trough {
@@ -291,10 +304,19 @@ tooltip label {
 }
 
 /* Filled portion (highlight) */
-.brightbar trough progress {
+.brightbar trough highlight {
   border-radius: 2px;
   color: #e4c9af;
   background-image: linear-gradient(to right, #e4c9af, #f2cdcd, #e0b089);
+}
+
+/* Draggable knob */
+.brightbar trough slider {
+  background-color: #f2cdcd;
+  border-radius: 50%;
+  min-height: 10px;
+  min-width: 10px;
+  margin: -3px;
 }
 
 .bright_icon {
