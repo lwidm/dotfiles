@@ -171,17 +171,25 @@ def hyprctl_keyword_monitor(value: str):
     run_cmd(["hyprctl", "keyword", "monitor", value])
 
 
-def get_connected_monitors() -> list[dict]:
-    """Return list of monitor dicts from hyprctl -j monitors all.
+def get_connected_monitors(include_disabled: bool = True) -> list[dict]:
+    """Return list of monitor dicts from hyprctl -j monitors.
 
-    Uses `monitors all` (not just `monitors`) so that monitors disabled by a
-    previous layout (e.g. laptop_edp under laptop_4k_left) are still visible
-    to the matcher — otherwise the layout that disabled them stops matching
-    on subsequent runs and a less-specific layout takes over."""
+    By default uses `monitors all` (not just `monitors`) so that monitors
+    disabled by a previous layout (e.g. laptop_edp under laptop_4k_left) are
+    still visible to the matcher — otherwise the layout that disabled them
+    stops matching on subsequent runs and a less-specific layout takes over.
+
+    Pass include_disabled=False to get only the *active* monitors. This is what
+    bar generation must use: a disabled/stale monitor left in `monitors all`
+    would otherwise get a phantom eww bar that eww renders on the primary
+    output, producing duplicate bars on a single screen."""
+    cmd: list[str] = ["hyprctl", "-j", "monitors"]
+    if include_disabled:
+        cmd.append("all")
     for attempt in range(10):
         try:
             out = subprocess.check_output(
-                ["hyprctl", "-j", "monitors", "all"],
+                cmd,
                 encoding="utf-8",
                 stderr=subprocess.DEVNULL,
             )
@@ -310,13 +318,24 @@ def apply_monitor_config(monitors: list[dict]) -> None:
     # Step 3: Apply system settings based on detected hardware
     apply_system_settings("laptop_edp" in identified)
 
-    # Step 4: Generate and apply EWW bars
-    all_names: list[str] = [identified[k] for k in identified]
-    all_names += [m["name"] for m in unidentified]
+    # Step 4: Generate and apply EWW bars.
+    # Re-query the ACTIVE monitor set (without `all`) so that disabled or stale
+    # monitors still listed in `monitors all` don't each get a bar. eww renders
+    # a bar for an inactive monitor on the primary output instead, which is what
+    # produces "two bars on one screen". Filtering to active monitors avoids it.
+    active_names: set[str] = {
+        m["name"] for m in get_connected_monitors(include_disabled=False)
+    }
+    all_names: list[str] = [
+        identified[k] for k in identified if identified[k] in active_names
+    ]
+    all_names += [m["name"] for m in unidentified if m["name"] in active_names]
     primary_name: str | None = None
     if layout:
         primary_name = identified.get(layout.primary_key)
-    if not primary_name:
+    if primary_name not in active_names:
+        primary_name = None
+    if not primary_name and identified.get("laptop_edp") in active_names:
         primary_name = identified.get("laptop_edp")
     if not primary_name and all_names:
         primary_name = all_names[0]
@@ -571,8 +590,6 @@ def find_socket2() -> str | None:
 
 def run_daemon() -> None:
     """Run initial config, then listen for monitor hotplug events."""
-    startup_time: float = time.time()
-
     # Initial configuration
     monitors: list[dict] = get_connected_monitors()
     if monitors:
@@ -608,11 +625,6 @@ def run_daemon() -> None:
             continue
         event: str = line.split(">>", 1)[0]
         if event in ("monitoradded", "monitoraddedv2", "monitorremoved"):
-            # Hyprland emits monitoradded for existing monitors during startup,
-            # which would trigger a redundant restart and cause duplicate bars.
-            if time.time() - startup_time < 5.0:
-                print(f"Ignoring startup event: {line}")
-                continue
             print(f"Monitor event: {line}")
             time.sleep(0.5)  # debounce - let hardware settle
             monitors = get_connected_monitors()
@@ -708,7 +720,9 @@ def main() -> None:
         return
 
     if args.eww_only:
-        monitors = get_connected_monitors()
+        # Active monitors only — a disabled/stale monitor would otherwise get a
+        # phantom bar that eww renders on the primary (duplicate-bar bug).
+        monitors = get_connected_monitors(include_disabled=False)
         if not monitors:
             print("No monitors detected.", file=sys.stderr)
             sys.exit(1)
