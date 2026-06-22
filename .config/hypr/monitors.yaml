@@ -30,3 +30,11 @@ laptop_edp:
 thinkvision_m14t:
   match_description: "M14t"  # TODO: verify description after connecting ThinkVision
   resolution: "1920x1080@60"
+
+hp_e24i_empa:
+  match_description: "HP E24i G4 CNK0420Q4B"  # empa workplace, "laser-eye" (left), serial-specific
+  resolution: "1920x1200@59.95"
+
+hp_la2405_empa:
+  match_description: "LA2405 CN421304B2"  # empa workplace, right monitor, serial-specific
+  resolution: "1920x1200@59.95"

@@ -100,6 +100,18 @@
     thinkvision_m14t: "0x0"
   primary_key: laptop_edp
 
+# empa workplace: two HP 1920x1200 on top at same height (e24i "laser-eye" left,
+# la2405 right). laptop_edp (logical 1440x900 at scale 2.0) sits below, y=1200.
+# x=768 -> 1152px under laser-eye, 288px (1/5 of 1440) under the right monitor.
+- name: workplace_empa
+  required: [hp_e24i_empa, hp_la2405_empa, laptop_edp]
+  placements:
+    hp_e24i_empa:   "0x0"
+    hp_la2405_empa: "1920x0"
+    laptop_edp:     "768x1200"
+  primary_key: laptop_edp  # main (detailed) eww bar on the laptop panel
+  priority_order: [hp_e24i_empa, hp_la2405_empa, laptop_edp]
+
 - name: laptop_alone
   required: [laptop_edp]
   placements:
