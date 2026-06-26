@@ -21,12 +21,12 @@ Then follow in order:
 
 ### Arch
 ```zsh
-sudo pacman -S git wl-clipboard ttf-hack ttf-hack-nerd ttf-font-awesome wofi polybar hyprpaper hyprlock hypridle hyprshot flameshot wireplumber python-gobject mpd mpc playerctl zoxide python-yaml
+sudo pacman -S git wl-clipboard ttf-hack ttf-hack-nerd ttf-font-awesome wofi polybar hyprpaper hyprlock hypridle hyprshot flameshot wireplumber python-gobject mpd mpc playerctl zoxide python-yaml zsh
 ```
 
 ### Debian
 ```zsh
-sudo apt install git wl-clipboard fonts-hack ttf-font-awesome wofi polybar hyprpaper hyprlock hypridle flameshot wireplumber python3-gi mpd mpc playerctl python3-yaml
+sudo apt install git wl-clipboard fonts-hack ttf-font-awesome wofi polybar hyprpaper hyprlock hypridle flameshot wireplumber python3-gi mpd mpc playerctl python3-yaml zsh
 ```
 - `networkmanager-dmenu`: included in `network-manager`
 - `hyprshot`: install manually (not in apt)
@@ -36,7 +36,7 @@ sudo apt install git wl-clipboard fonts-hack ttf-font-awesome wofi polybar hyprp
 
 ### OpenSUSE Tumbleweed
 ```bash
-sudo zypper in git wl-clipboard hack-fonts wofi polybar hyprpaper hyprlock hypridle hyprshot flameshot wireplumber python-gobject-common-devel mpd mpclient playerctl NetworkManager-applet zoxide mako brightnessctl python3-PyYAML
+sudo zypper in git wl-clipboard hack-fonts wofi polybar hyprpaper hyprlock hypridle hyprshot flameshot wireplumber python-gobject-common-devel mpd mpclient playerctl NetworkManager-applet zoxide mako brightnessctl python3-PyYAML zsh
 ```
 - `oh-my-zsh`: install via script (see [Zsh](#zsh))
 - nerd font: install manually (see [fonts](#fonts))
@@ -48,8 +48,15 @@ conda install pyyaml
 ```
 
 ### fonts
-- ttf-hack is installed via the distro sections above
-- Install a nerd font: Download Hack from the [nerd fonts GitHub page](https://github.com/ryanoasis/nerd-fonts/releases) and extract to `~/.local/share/fonts/`:
+- ttf-hack may be already installed via the distro sections above
+- Install a nerd font: Download Hack from the [nerd fonts GitHub page](https://github.com/ryanoasis/nerd-fonts/releases)
+- If only command line is available use the following to download the Hack font
+```zsh
+mkdir -p ~/Downloads
+cd ~/Downloads
+wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip
+```
+- extract to `~/.local/share/fonts/`
 ```zsh
 mkdir -p ~/.local/share/fonts/HackNerdFont
 unzip Hack.zip -d ~/.local/share/fonts/HackNerdFont/
@@ -137,6 +144,10 @@ sudo zypper in zoxide
 Create file `~/.MYSYSTEM` and add:
 ```
 export MYSYSTEM=SystemName
+```
+the following command is usefull:
+```zsh
+echo "export MYSYSTEM=OpenSuseDesktop" >> ~/.MYSYSTEM
 ```
 Valid values:
 - `ArchDesktop` / `ArchLaptop`
