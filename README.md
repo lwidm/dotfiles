@@ -145,6 +145,10 @@ Create file `~/.MYSYSTEM` and add:
 ```
 export MYSYSTEM=SystemName
 ```
+the following command is usefull:
+```zsh
+echo "export MYSYSTEM=OpenSuseDesktop" >> ~/.MYSYSTEM
+```
 Valid values:
 - `ArchDesktop` / `ArchLaptop`
 - `DebianDesktop` / `DebianLaptop`
