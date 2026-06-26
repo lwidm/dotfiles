@@ -21,12 +21,12 @@ Then follow in order:
 
 ### Arch
 ```zsh
-sudo pacman -S git wl-clipboard ttf-hack ttf-hack-nerd ttf-font-awesome wofi polybar hyprpaper hyprlock hypridle hyprshot flameshot wireplumber python-gobject mpd mpc playerctl zoxide python-yaml
+sudo pacman -S git wl-clipboard ttf-hack ttf-hack-nerd ttf-font-awesome wofi polybar hyprpaper hyprlock hypridle hyprshot flameshot wireplumber python-gobject mpd mpc playerctl zoxide python-yaml zsh
 ```
 
 ### Debian
 ```zsh
-sudo apt install git wl-clipboard fonts-hack ttf-font-awesome wofi polybar hyprpaper hyprlock hypridle flameshot wireplumber python3-gi mpd mpc playerctl python3-yaml
+sudo apt install git wl-clipboard fonts-hack ttf-font-awesome wofi polybar hyprpaper hyprlock hypridle flameshot wireplumber python3-gi mpd mpc playerctl python3-yaml zsh
 ```
 - `networkmanager-dmenu`: included in `network-manager`
 - `hyprshot`: install manually (not in apt)
@@ -36,7 +36,7 @@ sudo apt install git wl-clipboard fonts-hack ttf-font-awesome wofi polybar hyprp
 
 ### OpenSUSE Tumbleweed
 ```bash
-sudo zypper in git wl-clipboard hack-fonts wofi polybar hyprpaper hyprlock hypridle hyprshot flameshot wireplumber python-gobject-common-devel mpd mpclient playerctl NetworkManager-applet zoxide mako brightnessctl python3-PyYAML
+sudo zypper in git wl-clipboard hack-fonts wofi polybar hyprpaper hyprlock hypridle hyprshot flameshot wireplumber python-gobject-common-devel mpd mpclient playerctl NetworkManager-applet zoxide mako brightnessctl python3-PyYAML zsh
 ```
 - `oh-my-zsh`: install via script (see [Zsh](#zsh))
 - nerd font: install manually (see [fonts](#fonts))
