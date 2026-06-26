@@ -48,8 +48,15 @@ conda install pyyaml
 ```
 
 ### fonts
-- ttf-hack is installed via the distro sections above
-- Install a nerd font: Download Hack from the [nerd fonts GitHub page](https://github.com/ryanoasis/nerd-fonts/releases) and extract to `~/.local/share/fonts/`:
+- ttf-hack may be already installed via the distro sections above
+- Install a nerd font: Download Hack from the [nerd fonts GitHub page](https://github.com/ryanoasis/nerd-fonts/releases)
+- If only command line is available use the following to download the Hack font
+```zsh
+mkdir -p ~/Downloads
+cd ~/Downloads
+wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip
+```
+- extract to `~/.local/share/fonts/`
 ```zsh
 mkdir -p ~/.local/share/fonts/HackNerdFont
 unzip Hack.zip -d ~/.local/share/fonts/HackNerdFont/
