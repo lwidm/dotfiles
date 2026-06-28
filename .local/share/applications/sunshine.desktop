@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Sunshine
+Comment=Self-hosted game streaming host (Moonlight server)
+Exec=/home/lukas/.local/bin/sunshine.AppImage
+Icon=/home/lukas/.local/share/icons/sunshine-logo.png
+Type=Application
+Terminal=false
+Categories=Network;RemoteAccess;
+StartupNotify=false

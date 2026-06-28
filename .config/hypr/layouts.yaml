@@ -60,6 +60,16 @@
     dell_u2723qe: "0x0"
   primary_key: dell_u2723qe
 
+# dell_u2724d_right rotated: 1440x2560; pikvm 1080 tall -> y=(2560-1080)/2=740
+- name: right_pikvm
+  required: [dell_u2724d_right, pikvm]
+  placements:
+    dell_u2724d_right: "0x0"
+    pikvm:             "1440x740"
+  primary_key: dell_u2724d_right
+  priority_order: [dell_u2724d_right, pikvm]
+  disabled: [hdmi_dummy]
+
 - name: desktop_right_only
   required: [dell_u2724d_right]
   placements:

@@ -11,3 +11,5 @@
 .local/share/icons/AffinityPublisher.svg
 .local/share/icons/hicolor/
 
+# Python 
+**/.mypy_cache/

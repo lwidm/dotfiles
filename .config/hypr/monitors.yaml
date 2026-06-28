@@ -20,6 +20,7 @@ dell_s2719dgf:
 pikvm:
   match_description: "PiKVM"  # TODO: verify description after connecting PiKVM
   resolution: "1920x1080@60"
+  default_workspace: 10
 
 laptop_edp:
   match_description: "__eDP__"  # sentinel; matched via special case in code
@@ -38,3 +39,7 @@ hp_e24i_empa:
 hp_la2405_empa:
   match_description: "LA2405 CN421304B2"  # empa workplace, right monitor, serial-specific
   resolution: "1920x1200@59.95"
+
+hdmi_dummy:
+  match_description: "Synaptics"  # HDMI dummy plug (Synaptics encoder chip)
+  resolution: "1920x1080@60"

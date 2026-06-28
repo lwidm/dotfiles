@@ -41,6 +41,7 @@ class MonitorProfile:
     scale: float = 1.0
     transform: int = 0  # 0=none, 1=90, 2=180, 3=270
     is_builtin: bool = False  # True for eDP-* built-in panels
+    default_workspace: int | None = None  # workspace to pin to this monitor on init
 
 
 @dataclass
@@ -98,6 +99,7 @@ def _load_monitors(path: str) -> dict[str, MonitorProfile]:
             scale=float(attrs.get("scale", 1.0)),
             transform=int(attrs.get("transform", 0)),
             is_builtin=bool(attrs.get("is_builtin", False)),
+            default_workspace=int(attrs["default_workspace"]) if "default_workspace" in attrs else None,
         )
         for key, attrs in data.items()
     }
@@ -141,6 +143,11 @@ KNOWN_LAYOUTS: list[KnownLayout] = _load_layouts(
 # ---------------------------------------------------------------------------
 
 DRY_RUN: bool = False
+
+# Monitors this process has explicitly disabled. Used by the daemon to skip
+# monitorremoved events that we ourselves triggered (disabling causes an event
+# that would otherwise send the daemon into a configure→disable→event loop).
+_SELF_DISABLED: set[str] = set()
 
 
 def run_cmd(cmd: list[str]) -> subprocess.CompletedProcess:
@@ -246,6 +253,43 @@ def parse_resolution(res: str) -> tuple[int, int]:
     return 1920, 1080  # fallback
 
 
+def find_nearest_mode(available_modes: list[str], requested: str) -> str:
+    """Snap requested WxH[@Hz] to the nearest mode the monitor actually supports.
+
+    Minimises Euclidean distance in (W, H) space first, then fps distance.
+    Returns a 'WxH@fps' string (no Hz suffix) ready for hyprctl keyword monitor.
+    """
+    m_fps: re.Match[str] | None = re.match(r"(\d+)x(\d+)@([\d.]+)", requested)
+    m_res: re.Match[str] | None = re.match(r"(\d+)x(\d+)", requested)
+    if m_fps:
+        req_w, req_h = int(m_fps.group(1)), int(m_fps.group(2))
+        req_fps: float | None = float(m_fps.group(3))
+    elif m_res:
+        req_w, req_h = int(m_res.group(1)), int(m_res.group(2))
+        req_fps = None
+    else:
+        return requested  # unparseable, pass through as-is
+
+    parsed: list[tuple[int, int, float]] = []
+    for mode in available_modes:
+        mm: re.Match[str] | None = re.match(r"(\d+)x(\d+)@([\d.]+)", mode.strip())
+        if mm:
+            parsed.append((int(mm.group(1)), int(mm.group(2)), float(mm.group(3))))
+
+    if not parsed:
+        return requested
+
+    def _score(t: tuple[int, int, float]) -> tuple[int, float]:
+        w, h, fps = t
+        return (
+            (w - req_w) ** 2 + (h - req_h) ** 2,
+            abs(fps - req_fps) if req_fps is not None else 0.0,
+        )
+
+    best_w, best_h, best_fps = min(parsed, key=_score)
+    return f"{best_w}x{best_h}@{best_fps:.2f}"
+
+
 def logical_width(profile: MonitorProfile) -> int:
     """Get the logical width of a monitor (accounting for scale and rotation)."""
     w: int
@@ -298,24 +342,45 @@ def apply_monitor_config(monitors: list[dict]) -> None:
 
     if layout is not None:
         print(f"Matched layout: {layout.name}")
-        # Disable any monitors the layout explicitly marks as disabled
         if layout.disabled is None:
             raise ValueError(f'Disabled list in layout "{layout.name}" returend None')
+        # Pop disabled monitors before applying layout (so they aren't positioned)
+        to_disable: dict[str, str] = {}
         for profile_key in layout.disabled:
             if profile_key in identified:
-                hypr_name: str = identified.pop(profile_key)
-                print(f"  Disabling {profile_key} ({hypr_name}) per layout")
-                hyprctl_keyword_monitor(f"{hypr_name},disable")
+                to_disable[profile_key] = identified.pop(profile_key)
         _apply_known_layout(layout, identified)
         # Auto-place any extra monitors not in the layout
         if unidentified:
             _auto_place_extra(unidentified, layout, identified)
+        # Disable after active monitors are configured: Hyprland re-evaluates rules
+        # on each keyword call, so disabling last prevents the catchall from re-enabling.
+        # Register in _SELF_DISABLED first so the daemon filters the monitorremoved
+        # event this generates and doesn't loop back into apply_monitor_config.
+        for profile_key, hypr_name in to_disable.items():
+            print(f"  Disabling {profile_key} ({hypr_name}) per layout")
+            _SELF_DISABLED.add(hypr_name)
+            hyprctl_keyword_monitor(f"{hypr_name},disable")
     else:
         # Full fallback: auto-place everything
         print("Fallback: auto-placement for all monitors")
         _auto_place_all(identified, unidentified)
 
-    # Step 3: Apply system settings based on detected hardware
+    # Step 3: Apply default workspace bindings for monitors that declare one.
+    # Set the workspace rule first (so Hyprland knows the binding), then dispatch
+    # moveworkspacetomonitor to apply it immediately even if already initialised.
+    profile_key: str
+    hypr_name: str
+    for profile_key, hypr_name in identified.items():
+        ws: int | None = KNOWN_MONITORS[profile_key].default_workspace
+        if ws is not None:
+            print(f"  Workspace {ws} → {hypr_name}")
+            run_cmd(["hyprctl", "keyword", "workspace",
+                     f"{ws}, monitor:{hypr_name}, default:true"])
+            run_cmd(["hyprctl", "dispatch", "moveworkspacetomonitor",
+                     f"{ws} {hypr_name}"])
+
+    # Step 4: Apply system settings based on detected hardware
     apply_system_settings("laptop_edp" in identified)
 
     # Step 4: Generate and apply EWW bars.
@@ -623,7 +688,13 @@ def run_daemon() -> None:
         line = line.strip()
         if not line:
             continue
-        event: str = line.split(">>", 1)[0]
+        parts: list[str] = line.split(">>", 1)
+        event: str = parts[0]
+        data: str = parts[1] if len(parts) > 1 else ""
+        if event == "monitorremoved" and data in _SELF_DISABLED:
+            _SELF_DISABLED.discard(data)
+            print(f"INFO: Skipping self-triggered monitorremoved for {data}")
+            continue
         if event in ("monitoradded", "monitoraddedv2", "monitorremoved"):
             print(f"Monitor event: {line}")
             time.sleep(0.5)  # debounce - let hardware settle
@@ -680,6 +751,85 @@ def dump_monitors() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Remote Desktop Mode
+# ---------------------------------------------------------------------------
+
+
+def apply_remote_desktop_mode(resolution: str | None) -> None:
+    """Configure only the HDMI dummy for Sunshine/Moonlight remote desktop.
+
+    Kills the monitor daemon so it does not restore the other monitors.
+    To return to normal: python3 monitor-setup.py --daemon &
+    """
+    subprocess.run(
+        ["pkill", "-9", "-f", "monitor-setup.py --daemon"], capture_output=True
+    )
+    time.sleep(0.3)
+
+    monitors: list[dict] = get_connected_monitors(include_disabled=True)
+    if not monitors:
+        print("No monitors detected.", file=sys.stderr)
+        sys.exit(1)
+
+    dummy_name: str | None = None
+    dummy_modes: list[str] = []
+    others: list[str] = []
+    mon: dict
+    for mon in monitors:
+        key: str | None = identify_monitor(mon)
+        if key == "hdmi_dummy":
+            dummy_name = mon["name"]
+            modes_raw = mon.get("availableModes", [])
+            dummy_modes = (
+                modes_raw.split() if isinstance(modes_raw, str) else modes_raw
+            )
+        else:
+            others.append(mon["name"])
+
+    if dummy_name is None:
+        print("ERROR: No HDMI dummy monitor found (Synaptics).", file=sys.stderr)
+        sys.exit(1)
+
+    res_str: str
+    if not resolution:
+        res_str = "preferred"
+    elif "${" in resolution:
+        print(
+            "WARNING: resolution contains unexpanded shell variables "
+            f"({resolution!r}). Sunshine variables are only expanded when the "
+            "command is run via a shell. Use:\n"
+            "  bash -c 'python3 ... --remote-desktop "
+            '\"${SUNSHINE_CLIENT_WIDTH}x${SUNSHINE_CLIENT_HEIGHT}@${SUNSHINE_CLIENT_FPS}\"'
+            "'\nFalling back to preferred.",
+            file=sys.stderr,
+        )
+        res_str = "preferred"
+    else:
+        res_str = resolution
+        if dummy_modes:
+            nearest: str = find_nearest_mode(dummy_modes, res_str)
+            req_w, req_h = parse_resolution(res_str)
+            near_w, near_h = parse_resolution(nearest)
+            if (req_w, req_h) != (near_w, near_h):
+                print(f"  {res_str} not available on dummy, snapping to {nearest}")
+            res_str = nearest
+
+    print(f"Remote desktop: {dummy_name} → {res_str}")
+    hyprctl_keyword_monitor(f"{dummy_name},{res_str},0x0,1.0")
+
+    name: str
+    for name in others:
+        print(f"  Disabling {name}")
+        hyprctl_keyword_monitor(f"{name},disable")
+
+    apply_system_settings(False)
+    generate_eww_bars([dummy_name], dummy_name)
+    restart_eww([dummy_name])
+    print("Remote desktop mode active.")
+    print("To restore normal layout: python3 ~/.config/hypr/monitor-setup.py --daemon &")
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -710,6 +860,18 @@ def main() -> None:
         action="store_true",
         help="Print detected monitor info for debugging",
     )
+    parser.add_argument(
+        "--remote-desktop",
+        metavar="RES",
+        nargs="?",
+        const="",
+        help=(
+            "Remote desktop mode (Sunshine/Moonlight): activate only the HDMI dummy. "
+            "Optional RES: WxH or WxH@Hz (e.g. 1920x1080 or 1920x1080@60). "
+            "Snaps to the nearest mode the dummy supports. "
+            "Kills the monitor daemon to prevent it from restoring other monitors."
+        ),
+    )
     args = parser.parse_args()
 
     DRY_RUN = args.dry_run
@@ -717,6 +879,10 @@ def main() -> None:
 
     if args.dump_monitors:
         dump_monitors()
+        return
+
+    if args.remote_desktop is not None:
+        apply_remote_desktop_mode(args.remote_desktop or None)
         return
 
     if args.eww_only:
