@@ -1,0 +1,15 @@
+font=Inter 10
+background-color=#3a454a
+text-color=#d3c6aa
+border-size=1
+border-color=#53e2ae
+border-radius=10
+width=480
+margin=12
+padding=12,8
+default-timeout=10000
+anchor=top-right
+
+[urgency=critical]
+border-color=#e67e80
+default-timeout=0
