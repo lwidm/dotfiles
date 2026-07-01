@@ -612,9 +612,6 @@ def restart_eww(monitor_names: list[str]) -> None:
     if not bar_ids:
         return
 
-    # Kill every eww process: the daemon AND any stray `eww open` that
-    # auto-daemonized itself in a previous run (pkill -x matches their "eww"
-    # comm). Wait for them to fully exit before starting a fresh daemon.
     subprocess.run(["eww", "kill"], capture_output=True)
     subprocess.run(["pkill", "-9", "-x", "eww"], capture_output=True)
     for _ in range(50):
@@ -622,35 +619,15 @@ def restart_eww(monitor_names: list[str]) -> None:
             break
         time.sleep(0.1)
 
-    # Start the daemon detached (its own session, no inherited pipes) so this
-    # call returns immediately and the daemon survives.
-    subprocess.Popen(
-        ["eww", "daemon"],
+    result = subprocess.run(
+        ["eww", "open-many", *bar_ids],
         stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
-        start_new_session=True,
-    )
-
-    # Wait until the daemon's IPC socket actually answers. `eww ping` returns
-    # non-zero (without spawning a daemon) until it is reachable.
-    ready: bool = False
-    for _ in range(100):  # up to ~10s
-        if subprocess.run(["eww", "ping"], capture_output=True).returncode == 0:
-            ready = True
-            break
-        time.sleep(0.1)
-    if not ready:
-        print("WARNING: eww daemon did not become reachable in time", file=sys.stderr)
-
-    # Open all bars in one command against the ready daemon.
-    result = subprocess.run(
-        ["eww", "open-many", *bar_ids], capture_output=True, text=True
     )
     if result.returncode != 0:
         print(
-            f"WARNING: eww open-many failed (rc={result.returncode}): "
-            f"{result.stderr.strip()}",
+            f"WARNING: eww open-many failed (rc={result.returncode})",
             file=sys.stderr,
         )
     print(f"Opened EWW bars: {', '.join(bar_ids)}")
@@ -703,6 +680,8 @@ def run_daemon() -> None:
         poll_daemon()
         return
 
+    last_names: set[str] = {m["name"] for m in monitors}
+
     line: str
     for line in f:
         line = line.strip()
@@ -719,6 +698,11 @@ def run_daemon() -> None:
             print(f"Monitor event: {line}")
             time.sleep(0.5)  # debounce - let hardware settle
             monitors = get_connected_monitors()
+            current_names: set[str] = {m["name"] for m in monitors}
+            if current_names == last_names:
+                print("  Monitor set unchanged - skipping reconfigure")
+                continue
+            last_names = current_names
             if monitors:
                 apply_monitor_config(monitors)
 
