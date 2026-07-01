@@ -99,7 +99,11 @@ def _load_monitors(path: str) -> dict[str, MonitorProfile]:
             scale=float(attrs.get("scale", 1.0)),
             transform=int(attrs.get("transform", 0)),
             is_builtin=bool(attrs.get("is_builtin", False)),
-            default_workspace=int(attrs["default_workspace"]) if "default_workspace" in attrs else None,
+            default_workspace=(
+                int(attrs["default_workspace"])
+                if "default_workspace" in attrs
+                else None
+            ),
         )
         for key, attrs in data.items()
     }
@@ -375,10 +379,17 @@ def apply_monitor_config(monitors: list[dict]) -> None:
         ws: int | None = KNOWN_MONITORS[profile_key].default_workspace
         if ws is not None:
             print(f"  Workspace {ws} → {hypr_name}")
-            run_cmd(["hyprctl", "keyword", "workspace",
-                     f"{ws}, monitor:{hypr_name}, default:true"])
-            run_cmd(["hyprctl", "dispatch", "moveworkspacetomonitor",
-                     f"{ws} {hypr_name}"])
+            run_cmd(
+                [
+                    "hyprctl",
+                    "keyword",
+                    "workspace",
+                    f"{ws}, monitor:{hypr_name}, default:true",
+                ]
+            )
+            run_cmd(
+                ["hyprctl", "dispatch", "moveworkspacetomonitor", f"{ws} {hypr_name}"]
+            )
 
     # Step 4: Apply system settings based on detected hardware
     apply_system_settings("laptop_edp" in identified)
@@ -437,8 +448,7 @@ def _apply_known_layout(layout: KnownLayout, identified: dict[str, str]) -> None
             cmd += f",transform,{transform}"
         print(
             f"  {hypr_name}: {resolution} @ {placement.position} "
-            f"scale={scale} transform={transform}"
-            + (" (override)" if ov else "")
+            f"scale={scale} transform={transform}" + (" (override)" if ov else "")
         )
         hyprctl_keyword_monitor(cmd)
 
@@ -594,44 +604,54 @@ def generate_eww_bars(monitor_names: list[str], primary_name: str | None) -> Non
 
 
 def restart_eww(monitor_names: list[str]) -> None:
-    """Kill eww, restart daemon, open all generated bar windows."""
-    bar_ids: list[str]
+    bar_ids: list[str] = [f"bar{i}" for i in range(len(monitor_names))]
     if DRY_RUN:
-        bar_ids = [f"bar{i}" for i in range(len(monitor_names))]
         print(f"  [dry-run] Would restart eww and open: {', '.join(bar_ids)}")
         return
 
-    bar_ids = [f"bar{i}" for i in range(len(monitor_names))]
+    if not bar_ids:
+        return
 
-    # Kill all existing eww instances and wait for them to fully exit
+    # Kill every eww process: the daemon AND any stray `eww open` that
+    # auto-daemonized itself in a previous run (pkill -x matches their "eww"
+    # comm). Wait for them to fully exit before starting a fresh daemon.
+    subprocess.run(["eww", "kill"], capture_output=True)
     subprocess.run(["pkill", "-9", "-x", "eww"], capture_output=True)
     for _ in range(50):
         if subprocess.run(["pgrep", "-x", "eww"], capture_output=True).returncode != 0:
             break
         time.sleep(0.1)
 
-    # Start daemon
+    # Start the daemon detached (its own session, no inherited pipes) so this
+    # call returns immediately and the daemon survives.
     subprocess.Popen(
-        ["setsid", "eww", "daemon"],
+        ["eww", "daemon"],
+        stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
+        start_new_session=True,
     )
 
-    # Wait for daemon to be ready
-    for _ in range(20):
-        time.sleep(0.1)
-        result = subprocess.run(["pgrep", "-x", "eww"], capture_output=True)
-        if result.returncode == 0:
+    # Wait until the daemon's IPC socket actually answers. `eww ping` returns
+    # non-zero (without spawning a daemon) until it is reachable.
+    ready: bool = False
+    for _ in range(100):  # up to ~10s
+        if subprocess.run(["eww", "ping"], capture_output=True).returncode == 0:
+            ready = True
             break
+        time.sleep(0.1)
+    if not ready:
+        print("WARNING: eww daemon did not become reachable in time", file=sys.stderr)
 
-    time.sleep(0.3)  # grace period for daemon initialization
-
-    # Open all bars
-    for bar_id in bar_ids:
-        subprocess.run(
-            ["eww", "open", bar_id],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+    # Open all bars in one command against the ready daemon.
+    result = subprocess.run(
+        ["eww", "open-many", *bar_ids], capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        print(
+            f"WARNING: eww open-many failed (rc={result.returncode}): "
+            f"{result.stderr.strip()}",
+            file=sys.stderr,
         )
     print(f"Opened EWW bars: {', '.join(bar_ids)}")
 
@@ -780,9 +800,7 @@ def apply_remote_desktop_mode(resolution: str | None) -> None:
         if key == "hdmi_dummy":
             dummy_name = mon["name"]
             modes_raw = mon.get("availableModes", [])
-            dummy_modes = (
-                modes_raw.split() if isinstance(modes_raw, str) else modes_raw
-            )
+            dummy_modes = modes_raw.split() if isinstance(modes_raw, str) else modes_raw
         else:
             others.append(mon["name"])
 
@@ -799,7 +817,7 @@ def apply_remote_desktop_mode(resolution: str | None) -> None:
             f"({resolution!r}). Sunshine variables are only expanded when the "
             "command is run via a shell. Use:\n"
             "  bash -c 'python3 ... --remote-desktop "
-            '\"${SUNSHINE_CLIENT_WIDTH}x${SUNSHINE_CLIENT_HEIGHT}@${SUNSHINE_CLIENT_FPS}\"'
+            '"${SUNSHINE_CLIENT_WIDTH}x${SUNSHINE_CLIENT_HEIGHT}@${SUNSHINE_CLIENT_FPS}"'
             "'\nFalling back to preferred.",
             file=sys.stderr,
         )
@@ -826,7 +844,9 @@ def apply_remote_desktop_mode(resolution: str | None) -> None:
     generate_eww_bars([dummy_name], dummy_name)
     restart_eww([dummy_name])
     print("Remote desktop mode active.")
-    print("To restore normal layout: python3 ~/.config/hypr/monitor-setup.py --daemon &")
+    print(
+        "To restore normal layout: python3 ~/.config/hypr/monitor-setup.py --daemon &"
+    )
 
 
 # ---------------------------------------------------------------------------
